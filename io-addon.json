@@ -1,9 +1,0 @@
-{
-    "version": "0.0.1",
-    "name": "WidgetFactory",
-    "ident": "WIDGETFACTORY",
-    "dirname": "WidgetFactory",
-    "urlHomepage": "http://ccu.io/addons.html#widgetfactory",
-    "urlDownload": "https://github.com/smiling-Jack/CCU-IO.WidgetFactory/archive/master.zip",
-    "urlMeta": "https://raw.github.com/smiling-Jack/CCU-IO.WidgetFactory/master/io-addon.json"
-}

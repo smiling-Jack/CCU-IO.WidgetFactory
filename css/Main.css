@@ -82,15 +82,15 @@ body {
     left: 0;
     width: calc(100% - 2px);
     margin: 0 !important;
-    min-height: 142px;
     height: calc(100% - 57px);
+    background-color: gray;
+
 }
 
 .toolbox_body {
     position: absolute !important;
-    width: 170px;
-    top: 30px;
-    height: calc(100% - 30px);
+    width: 300px;
+    height: calc(100% - 14px);
     overflow: hidden !important;
 }
 
@@ -187,23 +187,25 @@ body {
 }
 
 .prg_body {
-    position: relative !important;
-    top: -32px;
-    left: 150px;
-    width: calc(100% - 150px);
+    position: absolute !important;
+    left: 300px;
+    width: calc(100% - 300px);
     height: auto;
     overflow: hidden;
     background-color: transparent !important;
     max-height: 100%;
+    min-height: 100%;
 }
 
 .prg_panel {
-    position: relative;
-    width: 4000px;
-    height: 2000px;
-    padding: 3px;
-    border: 3px solid #000000;
-    outline: 3px solid #FFFFFF;
+    width: auto;
+    height: auto;
+    min-height: 100% !important;
+    min-width: calc(100% - 1px);
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    position: absolute;
 }
 
 .icon_set {
@@ -274,6 +276,7 @@ body {
     width: 150px !important;
     left: 185px;
     bottom: 20px;
+
 }
 
 #btn_save_abbrechen {

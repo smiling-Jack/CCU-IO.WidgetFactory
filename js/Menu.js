@@ -9,7 +9,7 @@ jQuery.extend(true, WF, {
         $("#img_iconbar").tooltip();
         $("#menu").menu({position: {at: "left bottom"}});
         $("#m_neu").click(function () {
-            WF.clear();
+            WF.neu()
         });
         $("#m_save").click(function () {
             if ($("body").find(".ui-dialog:not(.quick-help)").length == 0) {
@@ -47,7 +47,7 @@ jQuery.extend(true, WF, {
             window.dispatchEvent(evt);
 
             storage.set(WF.str_theme, ($(this).data('info')));
-            theme = $(this).data('info');
+            WF.theme = $(this).data('info');
             WF.scrollbar_h("", $(".scroll-pane"), $(".scroll-content"), $("#scroll_bar_h"));
             WF.scrollbar_v("", $(".scroll-pane"), $(".scroll-content"), $("#scroll_bar_v"));
             WF.scrollbar_v("", $("#toolbox_body"), $(".toolbox"), $("#scroll_bar_toolbox"));
@@ -58,7 +58,7 @@ jQuery.extend(true, WF, {
 
         // Local
         $("#img_save_local").click(function () {
-            data = WF.make_savedata();
+            var data = WF.make_savedata();
 
             storage.set(WF.str_prog, data);
             $(this).effect("highlight")
@@ -139,6 +139,28 @@ jQuery.extend(true, WF, {
 
 
     },
+
+    neu: function(){
+        $("body").append('\
+                   <div id="dialog_new" style="text-align: center" title="Neu">\
+                   <button id="new_knob">"Knob"</button>\
+                   </div>');
+        $("#dialog_new").dialog({
+            height: 500,
+            width: 520,
+            resizable: false,
+//            modal:true,
+            close: function () {
+                $("#dialog_new").remove();
+            }
+        });
+
+        $("#new_knob").button().click(function () {
+          WF.add_knob()
+            $("#dialog_new").dialog("close");
+        });
+
+    }
 
 
 });
