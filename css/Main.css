@@ -326,3 +326,13 @@ body {
     bottom: 20px;
 }
 
+
+/*################################################################*/
+.setting_btn{
+    font: 13px !important;
+    font-size: 13px !important;
+    font-weight: bold !important;
+    text-align: left !important;
+    width: 100%;
+
+}

@@ -51,16 +51,35 @@ var WF = {
                 $(this).removeClass('ui-state-focus')
             });
 
+        $("#wgs_add_head")
+            .button()
+            .click(function () {
 
-        // Toolbox XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+                $("#wgs_add_content").toggle();
+                $(this).removeClass('ui-state-focus')
+            });
 
 
-        $(document).keydown(function (event) {
+        $("#wgs_add_select").xs_combo({
+            data: ["Knob_bar"],
+            val: ""
+        }),
+
+            $("#wgs_add_select_container").xs_combo({
+                data: ["Main"],
+                val: ""
+            }),
+
+
+            // Toolbox XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+
+            $(document).keydown(function (event) {
 //            console.log(event.keyCode)
-            WF.key = event.keyCode;
+                WF.key = event.keyCode;
 
 
-        });
+            });
 
         $(document).keyup(function () {
             if (WF.key == 17) {
@@ -74,42 +93,42 @@ var WF = {
         WF.menu_iconbar();
         WF.context_menu();
 
-
-        WF.add_knob();
+        WF.add_new_widget();
+        WF.add_knob_bar();
     },
 
-    add_knob: function () {
-        WF.add_new_widget();
+    add_knob_bar: function (container) {
+
         WF.add_widget_settings("knob")
 
 
         var stroke_w = 100;
-        var start_winkel= 0;
+        var start_winkel = 0;
         var stop_winkel = 90;
 
-        var max =100
-        var min =0
+        var max = 100
+        var min = 0
 
         var val = 100
 
         var _turn_winkel = start_winkel * Math.PI / 180;
 
-        var x1 =  500 + 450 * Math.sin(_turn_winkel );
-        var y1 =  500 - 450 * Math.cos(_turn_winkel );
+        var x1 = 500 + 450 * Math.sin(_turn_winkel);
+        var y1 = 500 - 450 * Math.cos(_turn_winkel);
 
-        var winkel_max = (start_winkel-stop_winkel)*-1;
-        var winkel = winkel_max/(max-min)*val+start_winkel;
+        var winkel_max = (start_winkel - stop_winkel) * -1;
+        var winkel = winkel_max / (max - min) * val + start_winkel;
 
-        var x2 = 500 + 450 * Math.sin(winkel* Math.PI / 180 );
-        var y2 = 500 - 450 * Math.cos(winkel* Math.PI / 180 );
+        var x2 = 500 + 450 * Math.sin(winkel * Math.PI / 180);
+        var y2 = 500 - 450 * Math.cos(winkel * Math.PI / 180);
 
         console.log(winkel)
 
-        $('#new_widget').append('<svg \
+        $(container).append('<svg \
            viewBox="0 0 1000 1000"\
             width="100%" \
             height="100%">\
-            <path name="hallo" stroke="blue" stroke-width='+stroke_w +' fill="none"/></svg>');
+            <path name="hallo" stroke="blue" stroke-width=' + stroke_w + ' fill="none"/></svg>');
 
         $('#new_widget_body').resizable({
             aspectRatio: true,
@@ -117,12 +136,12 @@ var WF = {
             .draggable();
 
 
-                if ((winkel * 180 / Math.PI)-start_winkel > 180  ) {
+        if ((winkel * 180 / Math.PI) - start_winkel > 180) {
 
-                    $('[name="hallo"]').attr("d", "M" + x1 + "," + y1 + " A450,450 0 0,1 " + x2 + "," + y2 + "  ");
-                } else {
-                    $('[name="hallo"]').attr("d", "M" + x1 + "," + y1 + " A450,450 0 1,1 " + x2 + "," + y2 + "  ");
-                }
+            $('[name="hallo"]').attr("d", "M" + x1 + "," + y1 + " A450,450 0 0,1 " + x2 + "," + y2 + "  ");
+        } else {
+            $('[name="hallo"]').attr("d", "M" + x1 + "," + y1 + " A450,450 0 1,1 " + x2 + "," + y2 + "  ");
+        }
 
 
     },

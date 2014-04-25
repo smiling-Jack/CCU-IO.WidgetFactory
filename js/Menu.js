@@ -156,7 +156,7 @@ jQuery.extend(true, WF, {
         });
 
         $("#new_knob").button().click(function () {
-          WF.add_knob()
+          WF.add_knob_bar()
             $("#dialog_new").dialog("close");
         });
 

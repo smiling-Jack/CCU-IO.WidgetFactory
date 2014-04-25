@@ -39,16 +39,15 @@
             var timer;
             var readonly ="";
 
-            console.log(o.combo);
             if (!o.combo){
                 readonly = "readonly";
             }
             $.each(o.data, function () {
-                liste += ('<p class="' + o.cssText + '">' + this + '</p>')
+                liste += ('<p style="margin: 0; padding: 5px; border:1px solid transparent; font-size: 80%; font-weight: bold" class="' + o.cssText + '">' + this + '</p>')
             });
 
             this.addClass(o.cssButton);
-            this.append('<input '+readonly +' style="border: none; background-color: transparent;padding-top: 0;padding-bottom: 0"  type="text" value="' + o.val + '" class="' + o.cssText + '"></input>');
+            this.append('<input '+readonly +' style=" font: inherit; color:inherit; border: none; background-color: transparent;padding:3px; height:100%; width: 100%;"  type="text" value="' + o.val + '" class="' + o.cssText + '"></input>');
             this.append('<div class="' + o.cssMenu + '">' + liste.toString() + '</div>');
 
             this.find("div").hide();
@@ -74,7 +73,8 @@
                     $(this).addClass(o.cssFocus)
                 })
                 .mouseleave(function () {
-                    $(this).removeClass(o.cssFocus)
+                    $(this).removeClass(o.cssFocus);
+                    $(this).addClass(o.cssButton)
                 })
                 .click(function () {
                     clearTimeout(timer);
@@ -97,12 +97,12 @@
                     $(list).hide();
                 });
 
+            $($this).val(o.val);
             $(text).change(function(){
                 $($this).val($(this).val());
                 $($this).trigger("change");
             });
         }
-
     }
 
 })(jQuery);
