@@ -26,8 +26,6 @@
                 cssMenu: _options.cssMenu || "ui-widget-content ui-corner-all " + (_options.addcssMenu || ""),
                 cssFocus: _options.cssFocus || "ui-state-focus ui-corner-all " + (_options.addcssFocus || ""),
                 cssText: _options.cssText || "",
-                width: _options.width || false,
-                height: _options.height || false,
                 data: _options.data || [],
                 time: _options.time || 750,
                 val: _options.val || "",
@@ -47,7 +45,7 @@
             });
 
             this.addClass(o.cssButton);
-            this.append('<input '+readonly +' style=" font: inherit; color:inherit; border: none; background-color: transparent;padding:3px; height:100%; width: 100%;"  type="text" value="' + o.val + '" class="' + o.cssText + '"></input>');
+            this.append('<input '+readonly +' style=" font: inherit; color:inherit; border: none; background-color: transparent;padding:0 0 0 3px  ; height:100%; width: 100%;"  type="text" value="' + o.val + '" class="' + o.cssText + '"></input>');
             this.append('<div class="' + o.cssMenu + '">' + liste.toString() + '</div>');
 
             this.find("div").hide();

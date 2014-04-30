@@ -336,3 +336,27 @@ body {
     width: 100%;
 
 }
+
+.xs_combo_menu{
+    left: 0;
+    position: relative;
+    top: -5px;
+    width: 100%;
+    z-index: auto;
+
+}
+.xs_combo_button{
+    height: 19px;
+    position: inherit;
+    z-index: auto;
+
+}
+#wgs_add_btn{
+    width: 100px !important;
+
+}
+
+#wgs_add_content{
+    text-align: center;
+
+}

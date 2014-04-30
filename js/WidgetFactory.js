@@ -3,7 +3,11 @@
  * Lizenz: [CC BY-NC 3.0](http://creativecommons.org/licenses/by-nc/3.0/de/)
  */
 
+var wid_id = "W00001";
 
+var elements = {
+
+};
 
 var WF = {
     socket: {},
@@ -16,19 +20,16 @@ var WF = {
     str_settings: "WidgetFactory_Settings",
     str_tollbox: "WidgetFactory_Toolbox",
 
-
+    elem_nr: 1,
     key: "",
 
     hoverEleme: undefined,
 
     Setup: function () {
 
-
-
         // slider XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
         $("#sim_output").prepend("<tr><td style='width: 100px'>Script Log</td><td></td></tr>");
-
 
         $("#prg_body").perfectScrollbar({
             wheelSpeed: 60,
@@ -62,24 +63,36 @@ var WF = {
 
         $("#wgs_add_select").xs_combo({
             data: ["Knob_bar"],
-            val: ""
+            val: "",
+            addcssMenu: "xs_combo_menu",
+            addcssButton: "xs_combo_button"
         }),
 
             $("#wgs_add_select_container").xs_combo({
                 data: ["Main"],
-                val: ""
+                val: "",
+                addcssMenu: "xs_combo_menu",
+                addcssButton: "xs_combo_button"
             }),
 
+            $("#wgs_add_btn")
+                .button()
+                .click(function () {
 
-            // Toolbox XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+                    WF.add_knob_bar($("#new_widget"), WF.elem_nr);
+                    WF.elem_nr++;
+
+                });
+
+        // Toolbox XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 
-            $(document).keydown(function (event) {
+        $(document).keydown(function (event) {
 //            console.log(event.keyCode)
-                WF.key = event.keyCode;
+            WF.key = event.keyCode;
 
 
-            });
+        });
 
         $(document).keyup(function () {
             if (WF.key == 17) {
@@ -94,63 +107,143 @@ var WF = {
         WF.context_menu();
 
         WF.add_new_widget();
-        WF.add_knob_bar();
+
+        $("#test").click(function () {
+            wid_builder.build();
+        })
     },
 
-    add_knob_bar: function (container) {
+    add_knob_bar: function (container, _nr) {
 
-        WF.add_widget_settings("knob")
+        WF.add_widget_settings("knob_bar");
+
+        var settings = {
+            parrent: "new_widget_x",
+            stroke_w: 100,
+            start_winkel: 0,
+            stop_winkel: 180,
+
+            w: "300px",
+            h: "300px",
+            max: 100,
+            min: 0,
+
+            val: 100,
+            nr: _nr,
+            left:0,
+            top:0
+        };
+        elements[_nr] = {};
+        elements[_nr]["type"] = "knob_bar";
+        elements[_nr]["nr"] = _nr;
+        elements[_nr]["name"] = wid_id + '_' + settings.nr + "_knob_bar";
+        elements[_nr]["settings"] = settings;
+
+function paint () {
+
+    var settings = elements[_nr]["settings"];
+    var _turn_winkel = settings.start_winkel * Math.PI / 180;
+    var r = 500 - (parseInt(settings.stroke_w)/2);
+    var x1 = 500 + r * Math.sin(_turn_winkel);
+    var y1 = 500 - r * Math.cos(_turn_winkel);
+    var winkel_max = (settings.start_winkel - settings.stop_winkel) * -1;
+    var winkel = (winkel_max / (settings.max - settings.min) * (settings.val - settings.min));
+    var x2 = 500 + r * Math.sin((winkel + parseInt(settings.start_winkel)) * Math.PI / 180);
+    var y2 = 500 - r * Math.cos((winkel + parseInt(settings.start_winkel)) * Math.PI / 180);
 
 
-        var stroke_w = 100;
-        var start_winkel = 0;
-        var stop_winkel = 90;
-
-        var max = 100
-        var min = 0
-
-        var val = 100
-
-        var _turn_winkel = start_winkel * Math.PI / 180;
-
-        var x1 = 500 + 450 * Math.sin(_turn_winkel);
-        var y1 = 500 - 450 * Math.cos(_turn_winkel);
-
-        var winkel_max = (start_winkel - stop_winkel) * -1;
-        var winkel = winkel_max / (max - min) * val + start_winkel;
-
-        var x2 = 500 + 450 * Math.sin(winkel * Math.PI / 180);
-        var y2 = 500 - 450 * Math.cos(winkel * Math.PI / 180);
-
-        console.log(winkel)
-
-        $(container).append('<svg \
+    $(container).append('<div style="position:absolute; top:' + settings.top + 'px; left:' + settings.left + 'px; border: 1px solid green;width:' + settings.w + '; height:' + settings.h + ' " id="' + wid_id + '_' + settings.nr + '_knob_bar"><svg \
            viewBox="0 0 1000 1000"\
             width="100%" \
             height="100%">\
-            <path name="hallo" stroke="blue" stroke-width=' + stroke_w + ' fill="none"/></svg>');
+            <path name="svg_knob_bar' + settings.nr + '" stroke="blue" stroke-width=' + settings.stroke_w + ' fill="none"/>\
+            </svg>\
+            </div>');
 
-        $('#new_widget_body').resizable({
-            aspectRatio: true,
-        })
-            .draggable();
-
-
-        if ((winkel * 180 / Math.PI) - start_winkel > 180) {
-
-            $('[name="hallo"]').attr("d", "M" + x1 + "," + y1 + " A450,450 0 0,1 " + x2 + "," + y2 + "  ");
-        } else {
-            $('[name="hallo"]').attr("d", "M" + x1 + "," + y1 + " A450,450 0 1,1 " + x2 + "," + y2 + "  ");
+    $('#' + wid_id + '_' + settings.nr + '_knob_bar').resizable({
+        aspectRatio: true,
+    })
+        .draggable({
+            containment:container,
+            stop: function(event,ui){
+                elements[_nr].settings["top"] = ui.position.top;
+                elements[_nr].settings["left"] = ui.position.left;
+                console.log($(this).position())
+            }
         }
+    );
+
+
+    if (winkel < 180) {
+
+        $('[name="svg_knob_bar' + settings.nr + '"]').attr("d", "M" + x1 + "," + y1 + " A"+r+","+r+" 0 0,1 " + x2 + "," + y2 + "  ");
+    } else {
+        $('[name="svg_knob_bar' + settings.nr + '"]').attr("d", "M" + x1 + "," + y1 + " A"+r+","+r+" 0 1,1 " + x2 + "," + y2 + "  ");
+    }
+
+}
+        paint()
+// Setting
+        $("#wgs_content").append('' +
+            '<div id="set'+ settings.nr + '">' +
+                '<hr>' +
+                '<table>' +
+                    '<tr>' +
+                    '<td>stroke_w</td>' +
+                    '<td><input class="element_settings" id="'+ settings.nr + '-stroke_w"></td>' +
+                    '</tr>' +
+                    '<tr>' +
+                    '<td>start_winkel</td>' +
+                    '<td><input class="element_settings" id="'+ settings.nr + '-start_winkel"></td>' +
+                    '</tr>' +
+                    '<tr>' +
+                    '<td>stop_winkel</td>' +
+                    '<td><input class="element_settings" id="'+ settings.nr + '-stop_winkel"></td>' +
+                    '</tr>' +
+                    '<tr>' +
+                    '<td>w</td>' +
+                    '<td><input class="element_settings" id="'+ settings.nr + '-w"></td>' +
+                    '</tr>' +
+                    '<tr>' +
+                    '<td>h</td>' +
+                    '<td><input class="element_settings" id="'+ settings.nr + '-h"></td>' +
+                    '</tr>' +
+                    '<tr>' +
+                    '<td>max</td>' +
+                    '<td><input class="element_settings" id="'+ settings.nr + '-max"></td>' +
+                    '</tr>' +
+                    '<tr>' +
+                    '<td>min</td>' +
+                    '<td><input class="element_settings" id="'+ settings.nr + '-min"></td>' +
+                    '</tr>' +
+                    '<tr>' +
+                    '<td>val</td>' +
+                    '<td><input class="element_settings" id="'+ settings.nr + '-val"></td>' +
+                    '</tr>' +
+                '</table>' +
+            '</div>'
+
+        );
+
+        $(".element_settings").change(function(){
+            var _element = $(this).attr("id").split("-");
+
+            elements[_element[0]].settings[_element[1]]= $(this).val();
+
+            $('#' + wid_id + '_' + settings.nr + '_knob_bar').remove();
+            paint();
+            });
 
 
     },
 
     add_new_widget: function () {
 
-        $("#prg_panel").append('<div id="new_widget_body" style=" width500px; height:500px; border: 1px solid yellow"><div id="new_widget" style="width:100%; height: 100%;  border: 1px dashed red"> </div></div>')
+        $("#prg_panel").append('<div id="new_widget_body" style="position:relative; border: 1px solid yellow"><div id="new_widget" style="width:500px; height:500px;   border: 1px dashed red"> </div></div>')
 
+        $('#new_widget').resizable({
 
+        })
     },
 
     add_widget_settings: function (type) {
@@ -168,8 +261,58 @@ var WF = {
 //    regaIndex: {},
 //    regaObjects: {},
 //    setStateTimers: {}
-//};
+//};webstorm
 
+
+var wid_builder = {
+    _script: "",
+    build: function () {
+
+        var _html = "";
+
+        $.each(elements, function () {
+
+            if (this.type == "knob_bar")
+
+                wid_builder._script += ' \n\
+var settings' + this.nr + ' = {\n\
+ parrent: "new_widget_x",\n\
+stroke_w: ' + this.settings.stroke_w + ',\n\
+start_winkel:  ' + this.settings.start_winkel + ',\n\
+stop_winkel:  ' + this.settings.stop_winkel + ',\n\
+w:  "' + this.settings.w + '",\n\
+h:  "' + this.settings.h + '",\n\
+max:  ' + this.settings.max + ',\n\
+min:  ' + this.settings.min + ',\n\
+val:  ' + this.settings.val + ',\n\
+nr:  ' + this.settings.nr + ',\n\
+left:' + this.settings.left + ',\n\
+top:' + this.settings.top + ',\n\
+ };\n\
+ var _turn_winkel = settings.start_winkel * Math.PI / 180;\n\
+ var r = 500 - (parseInt(settings.stroke_w)/2);\n\
+ var x1 = 500 + r * Math.sin(_turn_winkel);\n\
+ var y1 = 500 - r * Math.cos(_turn_winkel);\n\
+ var winkel_max = (settings.start_winkel - settings.stop_winkel) * -1;\n\
+ var winkel = (winkel_max / (settings.max - settings.min) * (settings.val - settings.min));\n\
+ var x2 = 500 + r * Math.sin((winkel + parseInt(settings.start_winkel)) * Math.PI / 180);\n\
+ var y2 = 500 - r * Math.cos((winkel + parseInt(settings.start_winkel)) * Math.PI / 180);\n\
+$("#new_widget_x").prepend(\'<div style="position:absolute; top:' + this.settings.top + 'px; left:' + this.settings.left + 'px; border: 1px solid green;width:' + this.settings.w + '; height:' + this.settings.h + ' " id="' + wid_id + '_' + this.settings.nr + '_knob_bar"><svg viewBox="0 0 1000 1000" width="100%" height="100%"><path name="svg_knob_bar' + this.settings.nr + '" stroke="blue" stroke-width=' + this.settings.stroke_w + ' fill="none"/></svg></div>\'); \n\
+\
+if ((winkel * 180 / Math.PI) - settings' + this.nr + '.start_winkel > 180) {\n\
+$(\'[name="svg_knob_bar' + this.settings.nr + '"]\').attr("d", "M" + x1 + "," + y1 + " A"+r+","+r+" 0 0,1 " + x2 + "," + y2 + "  ");\n\
+} else {\n\
+$(\'[name="svg_knob_bar' + this.settings.nr + '"]\').attr("d", "M" + x1 + "," + y1 + " A"+r+","+r+" 0 1,1 " + x2 + "," + y2 + "  ");\n\
+}\n\
+            ';
+
+        });
+
+
+        $("body").append('<div id="new_widget_x"></div><script>' + wid_builder._script + '</script>')
+        $("#new_widget_x").dialog();
+    }
+};
 
 (function () {
     $(document).ready(function () {
