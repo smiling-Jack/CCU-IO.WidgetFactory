@@ -378,3 +378,22 @@ body {
     padding-bottom: 20px;
 
 }
+#wgs_add_selectSelectBoxIt{
+    height: 21px !important;
+    width: 165px !important;
+
+}
+#wgs_add_selectSelectBoxItText , #wgs_add_selectSelectBoxItArrowContainer{
+    line-height: 22px !important;
+    height: 22px !important;
+    top: -4px !important;
+}
+.set_btn{
+    font-size: 13px !important;
+    height: 30px;
+    width: 100%;
+
+}
+.es_number{
+    width: 145px;
+}

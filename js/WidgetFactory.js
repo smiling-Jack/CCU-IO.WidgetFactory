@@ -61,28 +61,25 @@ var WF = {
             });
 
 
-        $("#wgs_add_select").xs_combo({
-            data: ["Knob_bar"],
+        $("#wgs_add_select").selectBoxIt({
+            theme: "jqueryui"
+        });
+
+        $("#wgs_add_select_container").xs_combo({
+            data: ["Main"],
             val: "",
             addcssMenu: "xs_combo_menu",
             addcssButton: "xs_combo_button"
         });
 
-            $("#wgs_add_select_container").xs_combo({
-                data: ["Main"],
-                val: "",
-                addcssMenu: "xs_combo_menu",
-                addcssButton: "xs_combo_button"
+        $("#wgs_add_btn")
+            .button()
+            .click(function () {
+
+                WF[$("#wgs_add_select option:selected").val()]($("#new_widget"), WF.elem_nr);
+                WF.elem_nr++;
+
             });
-
-            $("#wgs_add_btn")
-                .button()
-                .click(function () {
-
-                    WF.add_knob_bar($("#new_widget"), WF.elem_nr);
-                    WF.elem_nr++;
-
-                });
 
         // Toolbox XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
@@ -121,232 +118,348 @@ var WF = {
         })
     },
 
-    add_knob_bar: function (container, _nr) {
-
-        WF.add_widget_elem_settings("knob_bar");
+    add_knob: function (container, _nr) {
 
         elements[_nr] = {};
-        elements[_nr]["type"] = "knob_bar";
+        elements[_nr]["type"] = "knob";
         elements[_nr]["nr"] = _nr;
-        elements[_nr]["name"] = wid_id + '_' + _nr + "_knob_bar";
+        elements[_nr]["name"] = wid_id + '_' + _nr + "_knob";
         elements[_nr]["elem_settings"] = {};
+
         var elem_settings = {
-            parrent: elements[_nr].elem_settings.parrent || "new_widget_x",
-            stroke_w: elements[_nr].elem_settings.stroke_w || 100,
-            stroke_mode: elements[_nr].elem_settings.stroke_w || 100,
-            stroke_color: elements[_nr].elem_settings.stroke_w || 100,
-            stroke_url: elements[_nr].elem_settings.stroke_w || 100,
-            stroke_gard1: elements[_nr].elem_settings.stroke_w || 100,
-            stroke_gard2: elements[_nr].elem_settings.stroke_w || 100,
-            start_winkel: elements[_nr].elem_settings.start_winkel || 0,
-            stop_winkel: elements[_nr].elem_settings.stop_winkel || 180,
-            size: elements[_nr].elem_settings.size || 300,
-            max: elements[_nr].elem_settings.max || 100,
-            min: elements[_nr].elem_settings.min || 0,
-            val: elements[_nr].elem_settings.val || 100,
-            nr: elements[_nr].elem_settings.nr || _nr,
-            left: elements[_nr].elem_settings.left || 0,
-            top: elements[_nr].elem_settings.top || 0,
-            glow: elements[_nr].elem_settings.glow || 0,
-            glow_intent: elements[_nr].elem_settings.glow_intent || 0,
-            glow_color: elements[_nr].elem_settings.glow_color || 808080
-
+            parrent: elements[_nr].es.parrent || "new_widget_x",
+            size: elements[_nr].es.size || 300,
+            left: elements[_nr].es.left || 0,
+            top: elements[_nr].es.top || 0,
+            max: elements[_nr].es.max || 100,
+            min: elements[_nr].es.min || 0,
         };
-
         elements[_nr]["elem_settings"] = elem_settings;
 
         function paint() {
 
-            var elem_settings = elements[_nr]["elem_settings"];
-            var _turn_winkel = elem_settings.start_winkel * Math.PI / 180;
-            var r = 500 - (parseInt(elem_settings.stroke_w) / 2) - (elem_settings.glow * 2);
-            var x1 = 500 + r * Math.sin(_turn_winkel);
-            var y1 = 500 - r * Math.cos(_turn_winkel);
-            var winkel_max = (elem_settings.start_winkel - elem_settings.stop_winkel) * -1;
-            var winkel = (winkel_max / (elem_settings.max - elem_settings.min) * (elem_settings.val - elem_settings.min));
-            var x2 = 500 + r * Math.sin((winkel + parseInt(elem_settings.start_winkel)) * Math.PI / 180);
-            var y2 = 500 - r * Math.cos((winkel + parseInt(elem_settings.start_winkel)) * Math.PI / 180);
-
             var _defs = "";
             var _g = "";
-            if (elem_settings.glow > 0) {
-                _defs += '<filter id="theBlur' + elem_settings.nr + '"' +
-                    'filterUnits="userSpaceOnUse"' +
-                    'x="0" y="0" width="1000" height="1000">' +
-                    '<feGaussianBlur in="SourceGraphic" stdDeviation="' + elem_settings.glow + '" />' +
-                    '</filter>'
-
-                for (var i = 0; i < elem_settings.glow_intent; i++) {
-
-                    _g += '<use xlink:href="#svg_knob_bar' + elem_settings.nr + '" style="stroke:#' + elem_settings.glow_color + '" filter="url(#theBlur' + elem_settings.nr + ')"/> '
-                }
-
-            }
-
-
-            $(container).append('<div style="position:absolute; top:' + elem_settings.top + 'px; left:' + elem_settings.left + 'px; border: 1px solid transparent;width:' + elem_settings.size + 'px; height:' + elem_settings.size + 'px" id="' + wid_id + '_' + elem_settings.nr + '_knob_bar">\
+            $(container).append('<div style="position:absolute; top:' + es.top + 'px; left:' + es.left + 'px; border: 1px solid transparent;width:' + es.size + 'px; height:' + es.size + 'px" id="' + wid_id + '_' + es.nr + '_knob">\
             <svg \
                 viewBox="0 0 1000 1000"\
                 width="100%" \
                 height="100%"\
             >\
             <defs>\
-            <path id="svg_knob_bar' + elem_settings.nr + '" stroke-width=' + elem_settings.stroke_w + ' fill="none"/>\
+            <circle id="svg_knob' + es.nr + '" cx="500" cy="500" r="500" stroke="black" stroke-width="1" fill="blue" />\
           ' + _defs + '\
             </defs>\
             <g id="blurred">\
                  ' + _g + '\
-                <use xlink:href="#svg_knob_bar' + elem_settings.nr + '" style="stroke:red" " />\
+                <use xlink:href="#svg_knob' + es.nr + '" style="stroke:red" " />\
             </g>\
             </svg>\
             </div>');
 
-            $('#' + wid_id + '_' + elem_settings.nr + '_knob_bar')
+
+            $('#' + wid_id + '_' + es.nr + '_knob').click(function () {
+                $(".set").hide();
+                $("#set" + es.nr).show();
+                $(".element_selected")
+                    .removeClass("element_selected")
+                    .draggable("destroy")
+                    .resizable("destroy");
+                $(this)
+                    .addClass("element_selected")
+                    .draggable({
+                        containment: container,
+                        stop: function (event, ui) {
+                            elements[_nr].es.top = ui.position.top;
+                            elements[_nr].es.left = ui.position.left;
+                            add_settings()
+
+                        }
+                    })
+                    .resizable({
+                        aspectRatio: true,
+                        handles: "se",
+                        stop: function (event, ui) {
+                            elements[_nr].es.size = ui.size.width;
+
+                            add_settings()
+
+                        }
+                    });
+            });
+        }
+
+        paint();
+    },
+
+    add_knob_bar: function (container, _nr) {
+
+        WF.add_widget_elem_settings("knob_bar");
 
 
-                .click(function () {
-                    $(".set").hide();
-                    $("#set" + elem_settings.nr).show();
-                    $(".element_selected")
-                        .removeClass("element_selected")
-                        .draggable("destroy")
-                        .resizable("destroy");
-                    $(this)
-                        .addClass("element_selected")
-                        .draggable({
-                            containment: container,
-                            stop: function (event, ui) {
-                                elements[_nr].elem_settings.top = ui.position.top;
-                                elements[_nr].elem_settings.left = ui.position.left;
-                                add_settings()
 
-                            }
-                        })
-                        .resizable({
-                            aspectRatio: true,
-                            handles: "se",
-                            stop: function (event, ui) {
-                                elements[_nr].elem_settings.size = ui.size.width;
 
-                                add_settings()
+        var es = {
+            std: {
+                id_type: "65535",
+                id: "65535",
+                parrent: "new_widget_x",
+                h: 100,
+                w: 100,
+                left: 0,
+                top: 0,
+                nr: _nr,
+                opa: 1
+            },
 
-                            }
-                        });
-                });
+            start_winkel: 0,
+            stop_winkel: 180,
+            max: 100,
+            min: 0,
+            val: 100,
+
+            glow: {
+                mode: 0,
+                width: 0,
+                intent: 0,
+                color: ""
+            },
+            str: {
+                width: 100,
+                mode: "color",
+                color: 100,
+                url: 100,
+                opa: 1,
+            },
+            grad: {
+                pos: [],
+                color: [],
+                opa: []
+            }
+        };
+
+        elements[_nr] = es;
+
+
+        function paint() {
+
+
+            var _turn_winkel = es.start_winkel * Math.PI / 180;
+            var r = 500 - (parseInt(es.str.width) / 2) - (es.glow * 2);
+            var x1 = 500 + r * Math.sin(_turn_winkel);
+            var y1 = 500 - r * Math.cos(_turn_winkel);
+            var winkel_max = (es.start_winkel - es.stop_winkel) * -1;
+            var winkel = (winkel_max / (es.max - es.min) * (es.val - es.min));
+            var x2 = 500 + r * Math.sin((winkel + parseInt(es.start_winkel)) * Math.PI / 180);
+            var y2 = 500 - r * Math.cos((winkel + parseInt(es.start_winkel)) * Math.PI / 180);
+
+            var _defs = "";
+            var _g = "";
+            if (es.glow > 0) {
+                _defs += '<filter id="theBlur' + es.nr + '"' +
+                    'filterUnits="userSpaceOnUse"' +
+                    'x="0" y="0" width="1000" height="1000">' +
+                    '<feGaussianBlur in="SourceGraphic" stdDeviation="' + es.glow + '" />' +
+                    '</filter>'
+
+                for (var i = 0; i < es.glow.intent; i++) {
+
+                    _g += '<use xlink:href="#svg_knob_bar' + es.std.nr + '" style="stroke:#' + es.glow.color + '" filter="url(#theBlur' + es.std.nr + ')"/> '
+                }
+
+            }
+
+
+            $(container).append('<div style="position:absolute; top:' + es.std.top + 'px; left:' + es.std.left + 'px; border: 1px solid transparent;width:' + es.std.w + 'px; height:' + es.std.h + 'px" id="' + wid_id + '_' + es.std.nr + '_knob_bar">\
+            <svg \
+                viewBox="0 0 1000 1000"\
+                width="100%" \
+                height="100%"\
+            >\
+            <defs>\
+            <path id="svg_knob_bar' + es.std.nr + '" stroke-width=' + es.str.width + ' fill="none"/>\
+          ' + _defs + '\
+            </defs>\
+            <g id="blurred">\
+                 ' + _g + '\
+                <use xlink:href="#svg_knob_bar' + es.std.nr + '" style="stroke:red" " />\
+            </g>\
+            </svg>\
+            </div>');
+
+            $('#' + wid_id + '_' + es.std.nr + '_knob_bar').click(function () {
+                $(".set").hide();
+                $("#set" + es.std.nr).show();
+                $(".element_selected")
+                    .removeClass("element_selected")
+                    .draggable("destroy")
+                    .resizable("destroy");
+                $(this)
+                    .addClass("element_selected")
+                    .draggable({
+                        containment: container,
+                        stop: function (event, ui) {
+                            elements[_nr].es.top = ui.position.top;
+                            elements[_nr].es.left = ui.position.left;
+                            add_settings()
+
+                        }
+                    })
+                    .resizable({
+                        aspectRatio: true,
+                        handles: "se",
+                        stop: function (event, ui) {
+                            elements[_nr].es.size = ui.size.width;
+
+                            add_settings()
+
+                        }
+                    });
+            });
 
 
             if (winkel < 180) {
 
-                $('[id="svg_knob_bar' + elem_settings.nr + '"]').attr("d", "M" + x1 + "," + y1 + " A" + r + "," + r + " 0 0,1 " + x2 + "," + y2 + "  ");
+                $('[id="svg_knob_bar' + es.std.nr + '"]').attr("d", "M" + x1 + "," + y1 + " A" + r + "," + r + " 0 0,1 " + x2 + "," + y2 + "  ");
             } else {
-                $('[id="svg_knob_bar' + elem_settings.nr + '"]').attr("d", "M" + x1 + "," + y1 + " A" + r + "," + r + " 0 1,1 " + x2 + "," + y2 + "  ");
+                $('[id="svg_knob_bar' + es.std.nr + '"]').attr("d", "M" + x1 + "," + y1 + " A" + r + "," + r + " 0 1,1 " + x2 + "," + y2 + "  ");
             }
 
         }
 
 
         function add_settings() {
-            $("#set" + elem_settings.nr).remove();
+            $("#set" + es.std.nr).remove();
             $("#wgs_content").append('' +
-                    '<div id="set' + elem_settings.nr + '" class="set">' +
+                    '<div id="set' + es.std.nr + '" class="set">' +
                     '<hr>' +
-                    '<table>' +
-                    '<tr>' +
-                    '<td width="100px">id_type</td>' +
-                    '<td><select class="id_type" id="id_type' + elem_settings.nr + '">' +
-                    '<option value="hmid">ID</option>' +
-                    '<option value="child">Verärbung</option>' +
-                    '<option value="var">Variable</option>' +
-                    '</select></td>' +
-                    '</tr>' +
-                    '<tr>' +
-                    '<td>stroke_w</td>' +
-                    '<td><input value="' + elements[_nr].elem_settings.stroke_w + '" class="element_elem_settings" id="' + elem_settings.nr + '-stroke_w"></td>' +
-                    '</tr>' +
-                    '<tr>' +
-                    '<td>stroke_Mode</td>' +
-                    '<td><select value="' + elements[_nr].elem_settings.stroke_w + '" class="element_elem_settings" id="' + elem_settings.nr + '-stroke_mode">' +
-                    '<option value="color">color</option>' +
-                    '<option value="img">image</option>' +
-                    '<option value="gard">Farbverlauf</option>' +
-                    '</td>' +
-                    '</tr>' +
-                    '<tr>' +
-                    '<td>stroke_color</td>' +
-                    '<td><input value="' + elements[_nr].elem_settings.stroke_w + '" class="color element_elem_settings" id="' + elem_settings.nr + '-stroke_color"></td>' +
-                    '</tr>' +
-                    '<tr>' +
-                    '<td>stroke_url</td>' +
-                    '<td><input value="' + elements[_nr].elem_settings.stroke_w + '" class="color element_elem_settings" id="' + elem_settings.nr + '-stroke_url"></td>' +
-                    '</tr>' +
-                    '<tr>' +
-                    '<td>stroke_gard1</td>' +
-                    '<td><input value="' + elements[_nr].elem_settings.stroke_w + '" class="color element_elem_settings" id="' + elem_settings.nr + '-stroke_gard1"></td>' +
-                    '</tr>' +
-                    '<tr>' +
-                    '<td>stroke_gard2</td>' +
-                    '<td><input value="' + elements[_nr].elem_settings.stroke_w + '" class="color element_elem_settings" id="' + elem_settings.nr + '-stroke_gard2"></td>' +
-                    '</tr>' +
-                    '<tr>' +
-                    '<td>start_winkel</td>' +
-                    '<td><input value="' + elements[_nr].elem_settings.start_winkel + '"  class="element_elem_settings" id="' + elem_settings.nr + '-start_winkel"></td>' +
-                    '</tr>' +
-                    '<tr>' +
-                    '<td>stop_winkel</td>' +
-                    '<td><input value="' + elements[_nr].elem_settings.stop_winkel + '"  class="element_elem_settings" id="' + elem_settings.nr + '-stop_winkel"></td>' +
-                    '</tr>' +
-                    '<tr>' +
-                    '<td>Größe</td>' +
-                    '<td><input value="' + elements[_nr].elem_settings.size + '"  class="element_elem_settings" id="' + elem_settings.nr + '-size"></td>' +
-                    '</tr>' +
-                    '<tr>' +
-                    '<td>Links</td>' +
-                    '<td><input value="' + elements[_nr].elem_settings.left + '"   class="element_elem_settings" id="' + elem_settings.nr + '-left"></td>' +
-                    '</tr>' +
-                    '<tr>' +
-                    '<td>Oben</td>' +
-                    '<td><input value="' + elements[_nr].elem_settings.top + '"  class="element_elem_settings" id="' + elem_settings.nr + '-top"></td>' +
-                    '</tr>' +
-                    '<tr>' +
-                    '<td>max</td>' +
-                    '<td><input value="' + elements[_nr].elem_settings.max + '" class="element_elem_settings" id="' + elem_settings.nr + '-max"></td>' +
-                    '</tr>' +
-                    '<tr>' +
-                    '<td>min</td>' +
-                    '<td><input value="' + elements[_nr].elem_settings.min + '" class="element_elem_settings" id="' + elem_settings.nr + '-min"></td>' +
-                    '</tr>' +
-                    '<tr>' +
-                    '<td>val</td>' +
-                    '<td><input value="' + elements[_nr].elem_settings.val + '" class="element_elem_settings" id="' + elem_settings.nr + '-val"></td>' +
-                    '</tr>' +
-                    '<tr>' +
-                    '<td>Glow</td>' +
-                    '<td><input value="' + elements[_nr].elem_settings.glow + '" class="element_elem_settings" id="' + elem_settings.nr + '-glow"></td>' +
-                    '</tr>' +
-                    '<tr>' +
-                    '<td>Glow intent</td>' +
-                    '<td><input value="' + elements[_nr].elem_settings.glow_intent + '" class="element_elem_settings" style="width:30px" type="number" max=9 min=0 id="' + elem_settings.nr + '-glow_intent"></td>' +
-                    '</tr>' +
-                    '<tr>' +
-                    '<td>Glow color</td>' +
-                    '<td><input value="' + elements[_nr].elem_settings.glow_color + '"class="color element_elem_settings" id="' + elem_settings.nr + '-glow_color"></td>' +
-                    '</tr>' +
-                    '</table>' +
+//                    '<table>' +
+//
+//                    '<tr>' +
+//                    '<td>stroke_w</td>' +
+//                    '<td><input value="' + elements[_nr].es.stroke_w + '" class="element_elem_settings" id="' + es.std.nr + '-stroke_w"></td>' +
+//                    '</tr>' +
+//                    '<tr>' +
+//                    '<td>stroke_Mode</td>' +
+//                    '<td><select value="' + elements[_nr].es.stroke_w + '" class="element_elem_settings" id="' + es.std.nr + '-stroke_mode">' +
+//                    '<option value="color">color</option>' +
+//                    '<option value="img">image</option>' +
+//                    '<option value="gard">Farbverlauf</option>' +
+//                    '</td>' +
+//                    '</tr>' +
+//                    '<tr>' +
+//                    '<td>stroke_color</td>' +
+//                    '<td><input value="#' + elements[_nr].es.color + '" class="color element_elem_settings" id="' + es.std.nr + '-stroke_color"></td>' +
+//                    '</tr>' +
+//                    '<tr>' +
+//                    '<td>stroke_url</td>' +
+//                    '<td><input value="' + elements[_nr].es.stroke_w + '" class="element_elem_settings" id="' + es.std.nr + '-stroke_url"></td>' +
+//                    '</tr>' +
+//                    '<tr>' +
+//                    '<td>stroke_gard1</td>' +
+//                    '<td><input value="' + elements[_nr].es.stroke_grad1 + '" class="color element_elem_settings" id="' + es.std.nr + '-stroke_gard1"></td>' +
+//                    '</tr>' +
+//                    '<tr>' +
+//                    '<td>stroke_gard2</td>' +
+//                    '<td><input value="' + elements[_nr].es.stroke_grad2 + '" class="color element_elem_settings" id="' + es.std.nr + '-stroke_gard2"></td>' +
+//                    '</tr>' +
+//                    '<tr>' +
+//                    '<td>start_winkel</td>' +
+//                    '<td><input value="' + elements[_nr].es.start_winkel + '"  class="element_elem_settings" id="' + es.std.nr + '-start_winkel"></td>' +
+//                    '</tr>' +
+//                    '<tr>' +
+//                    '<td>stop_winkel</td>' +
+//                    '<td><input value="' + elements[_nr].es.stop_winkel + '"  class="element_elem_settings" id="' + es.std.nr + '-stop_winkel"></td>' +
+//                    '</tr>' +
+//                    '<tr>' +
+//                    '<td>Größe</td>' +
+//                    '<td><input value="' + elements[_nr].es.size + '"  class="element_elem_settings" id="' + es.std.nr + '-size"></td>' +
+//                    '</tr>' +
+//                    '<tr>' +
+//                    '<td>Links</td>' +
+//                    '<td><input value="' + elements[_nr].es.left + '"   class="element_elem_settings" id="' + es.std.nr + '-left"></td>' +
+//                    '</tr>' +
+//                    '<tr>' +
+//                    '<td>Oben</td>' +
+//                    '<td><input value="' + elements[_nr].es.top + '"  class="element_elem_settings" id="' + es.std.nr + '-top"></td>' +
+//                    '</tr>' +
+//                    '<tr>' +
+//                    '<td>max</td>' +
+//                    '<td><input value="' + elements[_nr].es.max + '" class="element_elem_settings" id="' + es.std.nr + '-max"></td>' +
+//                    '</tr>' +
+//                    '<tr>' +
+//                    '<td>min</td>' +
+//                    '<td><input value="' + elements[_nr].es.min + '" class="element_elem_settings" id="' + es.std.nr + '-min"></td>' +
+//                    '</tr>' +
+//                    '<tr>' +
+//                    '<td>val</td>' +
+//                    '<td><input value="' + elements[_nr].es.val + '" class="element_elem_settings" id="' + es.std.nr + '-val"></td>' +
+//                    '</tr>' +
+//                    '<tr>' +
+//                    '<td>Glow</td>' +
+//                    '<td><input value="' + elements[_nr].es.glow + '" class="element_elem_settings" id="' + es.std.nr + '-glow"></td>' +
+//                    '</tr>' +
+//                    '<tr>' +
+//                    '<td>Glow intent</td>' +
+//                    '<td><input value="' + elements[_nr].es.glow_intent + '" class="element_elem_settings" style="width:30px" type="number" max=9 min=0 id="' + es.std.nr + '-glow_intent"></td>' +
+//                    '</tr>' +
+//                    '<tr>' +
+//                    '<td>Glow color</td>' +
+//                    '<td><input value="' + elements[_nr].es.glow_color + '"class="color element_elem_settings" id="' + es.std.nr + '-glow_color"></td>' +
+//                    '</tr>' +
+//                    '</table>' +
                     '</div>'
             );
+
+            WF.add_es_std(_nr);
+            WF.add_es_str(_nr);
+            WF.add_es_glow(_nr);
+            WF.add_es_grad(_nr);
+
             new jscolor.init();
-            $('#id_type' + elem_settings.nr).selectBoxIt({
-                theme: "jqueryui",
+
+            $('#id_type' + es.std.nr).selectBoxIt({
+                theme: "jqueryui"
             });
 
             $(".element_elem_settings").change(function () {
                 var _element = $(this).attr("id").split("-");
-
                 elements[_element[0]].elem_settings[_element[1]] = $(this).val();
-
-                $('#' + wid_id + '_' + elem_settings.nr + '_knob_bar').remove();
+                $('#' + wid_id + '_' + es.std.nr + '_knob_bar').remove();
                 paint();
+                if (es.std.nr + '-stroke_mode' == $(this).attr("id")) {
+                    stroke_opt();
+                }
             });
+
+
+            stroke_opt();
+        }
+
+        function stroke_opt() {
+            if (elements[es.std.nr].es.stroke_mode == "color") {
+                $('#' + es.std.nr + '-stroke_color').parent().parent().show();
+
+                $('#' + es.std.nr + '-stroke_gard1').parent().parent().hide();
+                $('#' + es.std.nr + '-stroke_gard2').parent().parent().hide();
+                $('#' + es.std.nr + '-stroke_url').parent().parent().hide()
+            }
+            if (elements[es.std.nr].es.stroke_mode == "img") {
+                $('#' + es.std.nr + '-stroke_url').parent().parent().show();
+
+                $('#' + es.std.nr + '-stroke_gard1').parent().parent().hide();
+                $('#' + es.std.nr + '-stroke_gard2').parent().parent().hide();
+                $('#' + es.std.nr + '-stroke_color').parent().parent().hide();
+
+            }
+            if (elements[es.std.nr].es.stroke_mode == "gard") {
+                $('#' + es.std.nr + '-stroke_gard1').parent().parent().show();
+                $('#' + es.std.nr + '-stroke_gard2').parent().parent().show();
+
+                $('#' + es.std.nr + '-stroke_color').parent().parent().hide();
+                $('#' + es.std.nr + '-stroke_url').parent().parent().hide();
+            }
+
         }
 
         paint();
@@ -356,7 +469,7 @@ var WF = {
 
     add_new_widget: function () {
 
-        $("#prg_panel").append('<div id="new_widget_body" style="position:relative; border: 1px solid yellow"><div id="new_widget" style="width:500px; height:500px;   border: 1px dashed red"> </div></div>')
+        $("#prg_panel").append('<div id="new_widget_body" style="position:relative; border: 1px solid yellow"><div id="new_widget" style="width:500px; height:500px;   border: 1px dashed red"> </div></div>');
 
         $('#new_widget').resizable({
 
@@ -367,6 +480,175 @@ var WF = {
 
 
     },
+
+    add_es_std: function (nr) {
+
+        var es = elements[nr];
+        var data = '<div>' +
+            '<button class="set_btn" id="' + nr + '_std-btn">Standart:</button><br>' +
+            '<table style="display: none">' +
+            '<tr>' +
+            '<td width="100px">id_type</td>' +
+            '<td><select class="id_type" id="' + nr + '_std-id_type">' +
+            '<option value="ioid">ID</option>' +
+            '<option value="child">Verärbung</option>' +
+            '<option value="var">Variable</option>' +
+            '</select></td>' +
+            '</tr>' +
+            '<tr>' +
+            '<td>Höhe</td>' +
+            '<td><input type="number"  value="' + es.std.h + '"   class="es_std es_number" id="' + nr + '_std-h"></td>' +
+            '</tr>' +
+            '<tr>' +
+            '<td>Breite</td>' +
+            '<td><input type="number"  value="' + es.std.w + '"   class="es_std es_number" id="' + nr + '_std-w"></td>' +
+            '</tr>' +
+            '<tr>' +
+            '<td>Oben</td>' +
+            '<td><input type="number"  value="' + es.std.top + '" class="es_std es_number" id="' + nr + '_std-top"></td>' +
+            '</tr>' +
+            '<tr>' +
+            '<td>Links</td>' +
+            '<td><input type="number"  value="' + es.std.left + '"class="es_std es_number" id="' + nr + '_std-left"></td>' +
+            '</tr>' +
+            '<tr>' +
+            '<td>Transparens</td>' +
+            '<td><input type="number" min="0.0" max="1.0" step="0.1" value="' + es.std.opa + '" class="es_std es_number" id="' + nr + '_std-opa"></td>' +
+            '</tr>' +
+            '</table>' +
+            '<hr>' +
+            '</div>';
+
+
+        $("#set"+nr).append(data);
+
+
+        $("#" + nr + "_std-id_type").selectBoxIt({
+            theme: "jqueryui"
+        });
+
+        $('#'+nr + '_std-btn')
+            .button()
+            .click(function() {
+                $(this).next().next().toggle();
+                $(this).removeClass("ui-state-focus")
+            });
+
+        $(".es_std").change(function(){
+            var nr = $(this).attr("id").split("_")[0];
+
+            elements[nr].std[attr] = $(this).val()
+        })
+
+
+    },
+    add_es_str: function(nr){
+
+        var es = elements[nr];
+        var data = '<div>' +
+            '<button class="set_btn" id="' + nr + '_str-btn">Stroke:</button><br>' +
+            '<table style="display: none">' +
+            '<tr>' +
+            '<td>Breite</td>' +
+            '<td><input value="' + es.std.h + '"   class="es_std" id="' + nr + '_str-width"></td>' +
+            '</tr>' +
+            '<tr>' +
+            '<td>Transparens</td>' +
+            '<td><input value="' + es.std.w + '"   class="es_std" id="' + nr + '_str-opa"></td>' +
+            '</tr>' +
+            '<tr>' +
+            '<td width="100px">Mode</td>' +
+            '<td><select class="id_type" id="' + nr + '_str-mode">' +
+            '<option value="color">Color</option>' +
+            '<option value="img">Image</option>' +
+            '<option value="grad">Farbverlauf</option>' +
+            '</select></td>' +
+            '</tr>' +
+            '<tr>' +
+            '<td>color</td>' +
+            '<td><input value="' + es.std.top + '" class="color es_std" id="' + nr + '_str-Color"></td>' +
+            '</tr>' +
+            '<tr>' +
+            '<td>Image</td>' +
+            '<td><input value="' + es.std.top + '" class="es_std" id="' + nr + '_std-url"></td>' +
+            '</tr>' +
+            '</table>' +
+            '<hr>' +
+            '</div>';
+
+        $("#set"+nr).append(data);
+
+        $("#" + nr + "_str-mode").selectBoxIt({
+            theme: "jqueryui"
+        });
+
+        $('#'+nr + '_str-btn')
+            .button()
+            .click(function() {
+                $(this).next().next().toggle();
+                $(this).removeClass("ui-state-focus")
+            });
+
+        $(".es_str").change(function(){
+            var nr = $(this).attr("id").split("_")[0];
+
+            elements[nr].str[attr] = $(this).val()
+        })
+
+    },
+    add_es_glow: function(nr){
+
+        var es = elements[nr];
+        var data = '<div>' +
+            '<button class="set_btn" id="' + nr + '_glow-btn">Glow:</button><br>' +
+            '<table style="display: none">' +
+            '</table>' +
+            '<hr>' +
+            '</div>';
+
+        $("#set"+nr).append(data);
+
+        $('#'+nr + '_glow-btn')
+            .button()
+            .click(function() {
+                $(this).next().next().toggle();
+                $(this).removeClass("ui-state-focus")
+            });
+
+        $(".es_glow").change(function(){
+            var nr = $(this).attr("id").split("_")[0];
+
+            elements[nr].glow[attr] = $(this).val()
+        })
+
+    },
+    add_es_grad: function(nr){
+
+        var es = elements[nr];
+        var data = '<div>' +
+            '<button class="set_btn" id="' + nr + '_grad-btn">Farbverlauf:</button><br>' +
+            '<table style="display: none">' +
+            '</table>' +
+            '<hr>' +
+            '</div>';
+
+        $("#set"+nr).append(data);
+
+        $('#'+nr + '_grad-btn')
+            .button()
+            .click(function() {
+                $(this).next().next().toggle();
+                $(this).removeClass("ui-state-focus")
+            });
+
+        $(".es_grad").change(function(){
+            var nr = $(this).attr("id").split("_")[0];
+
+            elements[nr].grad[attr] = $(this).val()
+        })
+
+    },
+
 
 
 };
@@ -394,32 +676,32 @@ var wid_builder = {
                 wid_builder._script += ' \n\
 var elem_settings' + this.nr + ' = {\n\
  parrent: "new_widget_x",\n\
-stroke_w: ' + this.elem_settings.stroke_w + ',\n\
-start_winkel:  ' + this.elem_settings.start_winkel + ',\n\
-stop_winkel:  ' + this.elem_settings.stop_winkel + ',\n\
-w:  "' + this.elem_settings.w + '",\n\
-h:  "' + this.elem_settings.h + '",\n\
-max:  ' + this.elem_settings.max + ',\n\
-min:  ' + this.elem_settings.min + ',\n\
-val:  ' + this.elem_settings.val + ',\n\
-nr:  ' + this.elem_settings.nr + ',\n\
-left:' + this.elem_settings.left + ',\n\
-top:' + this.elem_settings.top + ',\n\
+stroke_w: ' + this.es.stroke_w + ',\n\
+start_winkel:  ' + this.es.start_winkel + ',\n\
+stop_winkel:  ' + this.es.stop_winkel + ',\n\
+w:  "' + this.es.w + '",\n\
+h:  "' + this.es.h + '",\n\
+max:  ' + this.es.max + ',\n\
+min:  ' + this.es.min + ',\n\
+val:  ' + this.es.val + ',\n\
+nr:  ' + this.es.std.nr + ',\n\
+left:' + this.es.left + ',\n\
+top:' + this.es.top + ',\n\
  };\n\
- var _turn_winkel = elem_settings.start_winkel * Math.PI / 180;\n\
- var r = 500 - (parseInt(elem_settings.stroke_w)/2);\n\
+ var _turn_winkel = es.start_winkel * Math.PI / 180;\n\
+ var r = 500 - (parseInt(es.stroke_w)/2);\n\
  var x1 = 500 + r * Math.sin(_turn_winkel);\n\
  var y1 = 500 - r * Math.cos(_turn_winkel);\n\
- var winkel_max = (elem_settings.start_winkel - elem_settings.stop_winkel) * -1;\n\
- var winkel = (winkel_max / (elem_settings.max - elem_settings.min) * (elem_settings.val - elem_settings.min));\n\
- var x2 = 500 + r * Math.sin((winkel + parseInt(elem_settings.start_winkel)) * Math.PI / 180);\n\
- var y2 = 500 - r * Math.cos((winkel + parseInt(elem_settings.start_winkel)) * Math.PI / 180);\n\
-$("#new_widget_x").prepend(\'<div style="position:absolute; top:' + this.elem_settings.top + 'px; left:' + this.elem_settings.left + 'px; border: 1px solid green;width:' + this.elem_settings.w + '; height:' + this.elem_settings.h + ' " id="' + wid_id + '_' + this.elem_settings.nr + '_knob_bar"><svg viewBox="0 0 1000 1000" width="100%" height="100%"><path name="svg_knob_bar' + this.elem_settings.nr + '" stroke="blue" stroke-width=' + this.elem_settings.stroke_w + ' fill="none"/></svg></div>\'); \n\
+ var winkel_max = (es.start_winkel - es.stop_winkel) * -1;\n\
+ var winkel = (winkel_max / (es.max - es.min) * (es.val - es.min));\n\
+ var x2 = 500 + r * Math.sin((winkel + parseInt(es.start_winkel)) * Math.PI / 180);\n\
+ var y2 = 500 - r * Math.cos((winkel + parseInt(es.start_winkel)) * Math.PI / 180);\n\
+$("#new_widget_x").prepend(\'<div style="position:absolute; top:' + this.es.top + 'px; left:' + this.es.left + 'px; border: 1px solid green;width:' + this.es.w + '; height:' + this.es.h + ' " id="' + wid_id + '_' + this.es.std.nr + '_knob_bar"><svg viewBox="0 0 1000 1000" width="100%" height="100%"><path name="svg_knob_bar' + this.es.std.nr + '" stroke="blue" stroke-width=' + this.es.stroke_w + ' fill="none"/></svg></div>\'); \n\
 \
 if ((winkel * 180 / Math.PI) - elem_settings' + this.nr + '.start_winkel > 180) {\n\
-$(\'[name="svg_knob_bar' + this.elem_settings.nr + '"]\').attr("d", "M" + x1 + "," + y1 + " A"+r+","+r+" 0 0,1 " + x2 + "," + y2 + "  ");\n\
+$(\'[name="svg_knob_bar' + this.es.std.nr + '"]\').attr("d", "M" + x1 + "," + y1 + " A"+r+","+r+" 0 0,1 " + x2 + "," + y2 + "  ");\n\
 } else {\n\
-$(\'[name="svg_knob_bar' + this.elem_settings.nr + '"]\').attr("d", "M" + x1 + "," + y1 + " A"+r+","+r+" 0 1,1 " + x2 + "," + y2 + "  ");\n\
+$(\'[name="svg_knob_bar' + this.es.std.nr + '"]\').attr("d", "M" + x1 + "," + y1 + " A"+r+","+r+" 0 1,1 " + x2 + "," + y2 + "  ");\n\
 }\n\
             ';
 
