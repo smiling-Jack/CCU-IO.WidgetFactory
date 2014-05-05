@@ -31,6 +31,7 @@
     <script type="text/javascript" src="js/lib/perfect-scrollbar.js"></script>
     <script type="text/javascript" src="js/lib/jquery.selectBoxIt.min.js"></script>
     <script type="text/javascript" src="js/lib/jscolor.js"></script>
+    <script type="text/javascript" src="js/lib/knockout-3.1.0.js"></script>
 
     <!--<script type="text/javascript" src="js/lib/jquery.inputmask.bundle.min.js"></script>-->
     <!--<script type="text/javascript" src="js/lib/can.jquery.min.js"></script>-->
@@ -142,15 +143,15 @@
                 <table>
                     <tr>
                         <td width="100px">Name:</td>
-                        <td><input id="wgs_name" type="text"> </td>
+                        <td><input id="wgs_name" type="text" data-bind="value: name" > </td>
                     </tr>
                     <tr>
                         <td>Breite:</td>
-                        <td><input id="wgs_width" type="text"> </td>
+                        <td><input id="wgs_width" type="text" data-bind="value: width"> </td>
                     </tr>
                     <tr>
                         <td>Höhe:</td>
-                        <td><input id="wgs_height" type="text"> </td>
+                        <td><input id="wgs_height" type="text" data-bind="value: height"> </td>
                     </tr>
                 </table>
             </div>

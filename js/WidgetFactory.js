@@ -5,7 +5,17 @@
 
 var wid_id = "W00001";
 
-var elements = {
+
+
+var wid = {
+    name : "hallo",
+    width :"x",
+    height :0,
+    ids:[65000],
+    ids_name:["Master"],
+    elements : {
+
+    }
 
 };
 
@@ -26,6 +36,8 @@ var WF = {
     hoverEleme: undefined,
 
     Setup: function () {
+
+        ko.applyBindings(wid);
 
         // slider XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
@@ -238,7 +250,8 @@ var WF = {
             }
         };
 
-        elements[_nr] = es;
+        wid.elements[_nr] = {};
+        wid.elements[_nr] = es;
 
 
         function paint() {
@@ -437,28 +450,28 @@ var WF = {
         }
 
         function stroke_opt() {
-            if (elements[es.std.nr].es.stroke_mode == "color") {
-                $('#' + es.std.nr + '-stroke_color').parent().parent().show();
-
-                $('#' + es.std.nr + '-stroke_gard1').parent().parent().hide();
-                $('#' + es.std.nr + '-stroke_gard2').parent().parent().hide();
-                $('#' + es.std.nr + '-stroke_url').parent().parent().hide()
-            }
-            if (elements[es.std.nr].es.stroke_mode == "img") {
-                $('#' + es.std.nr + '-stroke_url').parent().parent().show();
-
-                $('#' + es.std.nr + '-stroke_gard1').parent().parent().hide();
-                $('#' + es.std.nr + '-stroke_gard2').parent().parent().hide();
-                $('#' + es.std.nr + '-stroke_color').parent().parent().hide();
-
-            }
-            if (elements[es.std.nr].es.stroke_mode == "gard") {
-                $('#' + es.std.nr + '-stroke_gard1').parent().parent().show();
-                $('#' + es.std.nr + '-stroke_gard2').parent().parent().show();
-
-                $('#' + es.std.nr + '-stroke_color').parent().parent().hide();
-                $('#' + es.std.nr + '-stroke_url').parent().parent().hide();
-            }
+//            if (wid.elements[es.std.nr].es.stroke_mode == "color") {
+//                $('#' + es.std.nr + '-stroke_color').parent().parent().show();
+//
+//                $('#' + es.std.nr + '-stroke_gard1').parent().parent().hide();
+//                $('#' + es.std.nr + '-stroke_gard2').parent().parent().hide();
+//                $('#' + es.std.nr + '-stroke_url').parent().parent().hide()
+//            }
+//            if (wid.elements[es.std.nr].es.stroke_mode == "img") {
+//                $('#' + es.std.nr + '-stroke_url').parent().parent().show();
+//
+//                $('#' + es.std.nr + '-stroke_gard1').parent().parent().hide();
+//                $('#' + es.std.nr + '-stroke_gard2').parent().parent().hide();
+//                $('#' + es.std.nr + '-stroke_color').parent().parent().hide();
+//
+//            }
+//            if (wid.elements[es.std.nr].es.stroke_mode == "gard") {
+//                $('#' + es.std.nr + '-stroke_gard1').parent().parent().show();
+//                $('#' + es.std.nr + '-stroke_gard2').parent().parent().show();
+//
+//                $('#' + es.std.nr + '-stroke_color').parent().parent().hide();
+//                $('#' + es.std.nr + '-stroke_url').parent().parent().hide();
+//            }
 
         }
 
@@ -483,7 +496,7 @@ var WF = {
 
     add_es_std: function (nr) {
 
-        var es = elements[nr];
+        var es = wid.elements[nr];
         var data = '<div>' +
             '<button class="set_btn" id="' + nr + '_std-btn">Standart:</button><br>' +
             '<table style="display: none">' +
@@ -544,17 +557,17 @@ var WF = {
     },
     add_es_str: function(nr){
 
-        var es = elements[nr];
+        var es = wid.elements[nr];
         var data = '<div>' +
             '<button class="set_btn" id="' + nr + '_str-btn">Stroke:</button><br>' +
             '<table style="display: none">' +
             '<tr>' +
             '<td>Breite</td>' +
-            '<td><input value="' + es.std.h + '"   class="es_std" id="' + nr + '_str-width"></td>' +
+            '<td><input data-bind="value: height" class="es_std" id="' + nr + '_str-width"></td>' +
             '</tr>' +
             '<tr>' +
             '<td>Transparens</td>' +
-            '<td><input value="' + es.std.w + '"   class="es_std" id="' + nr + '_str-opa"></td>' +
+            '<td><input value="' + es.std.opa + '"   class="es_std" id="' + nr + '_str-opa"></td>' +
             '</tr>' +
             '<tr>' +
             '<td width="100px">Mode</td>' +
@@ -578,6 +591,10 @@ var WF = {
 
         $("#set"+nr).append(data);
 
+        ko.cleanNode;
+
+        ko.applyBindings(wid);
+
         $("#" + nr + "_str-mode").selectBoxIt({
             theme: "jqueryui"
         });
@@ -598,10 +615,28 @@ var WF = {
     },
     add_es_glow: function(nr){
 
-        var es = elements[nr];
+        var es = wid.elements[nr];
         var data = '<div>' +
             '<button class="set_btn" id="' + nr + '_glow-btn">Glow:</button><br>' +
             '<table style="display: none">' +
+            '<td width="100px">Mode</td>' +
+            '<td><select class="id_type" id="' + nr + '_glow-mode">' +
+            '<option value="grafik">Grafik</option>' +
+            '<option value="stroke">Stroke</option>' +
+            '</select></td>' +
+            '</tr>' +
+            '<tr>' +
+            '<td>Weite:</td>' +
+            '<td><input type="number" value="' + es.std.top + '" class="es_number es_glow" id="' + nr + '_glow-width"></td>' +
+            '</tr>' +
+            '<tr>' +
+            '<td>Stärke</td>' +
+            '<td><input  type="number" min="1" max="10"   value="' + es.std.top + '" class="es_number es_glow" id="' + nr + '_glow-intent"></td>' +
+            '</tr>' +
+            '<tr>' +
+            '<td>Farbe</td>' +
+            '<td><input value="' + es.std.top + '" class="color es_glow" id="' + nr + '_glow-Color"></td>' +
+            '</tr>' +
             '</table>' +
             '<hr>' +
             '</div>';
@@ -615,6 +650,10 @@ var WF = {
                 $(this).removeClass("ui-state-focus")
             });
 
+        $("#" + nr + "_glow-mode").selectBoxIt({
+            theme: "jqueryui"
+        });
+
         $(".es_glow").change(function(){
             var nr = $(this).attr("id").split("_")[0];
 
@@ -624,7 +663,7 @@ var WF = {
     },
     add_es_grad: function(nr){
 
-        var es = elements[nr];
+        var es = wid.elements[nr];
         var data = '<div>' +
             '<button class="set_btn" id="' + nr + '_grad-btn">Farbverlauf:</button><br>' +
             '<table style="display: none">' +
