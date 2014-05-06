@@ -6,16 +6,13 @@
 var wid_id = "W00001";
 
 
-
 var wid = {
-    name : "hallo",
-    width :"x",
-    height :0,
-    ids:[65000],
-    ids_name:["Master"],
-    elements : {
-
-    }
+    name: "hallo",
+    width: "x",
+    height: 0,
+    ids: [65000],
+    ids_name: ["Master"],
+    elements: ko.observable ({})
 
 };
 
@@ -50,6 +47,7 @@ var WF = {
         });
 
         $("#wgs_body").perfectScrollbar({
+            suppressScrollX: true,
             wheelSpeed: 60
         });
 
@@ -184,7 +182,7 @@ var WF = {
                         stop: function (event, ui) {
                             elements[_nr].es.top = ui.position.top;
                             elements[_nr].es.left = ui.position.left;
-                            add_settings()
+
 
                         }
                     })
@@ -194,7 +192,6 @@ var WF = {
                         stop: function (event, ui) {
                             elements[_nr].es.size = ui.size.width;
 
-                            add_settings()
 
                         }
                     });
@@ -206,15 +203,9 @@ var WF = {
 
     add_knob_bar: function (container, _nr) {
 
-        WF.add_widget_elem_settings("knob_bar");
-
-
-
-
         var es = {
             std: {
-                id_type: "65535",
-                id: "65535",
+                id: ["Master"],
                 parrent: "new_widget_x",
                 h: 100,
                 w: 100,
@@ -232,7 +223,7 @@ var WF = {
 
             glow: {
                 mode: 0,
-                width: 0,
+                width: 100,
                 intent: 0,
                 color: ""
             },
@@ -254,8 +245,10 @@ var WF = {
         wid.elements[_nr] = es;
 
 
-        function paint() {
+        function paint(_nr) {
 
+            var es = wid.elements[_nr];
+            var _es = "elements["+_nr+"].std.";
 
             var _turn_winkel = es.start_winkel * Math.PI / 180;
             var r = 500 - (parseInt(es.str.width) / 2) - (es.glow * 2);
@@ -268,11 +261,11 @@ var WF = {
 
             var _defs = "";
             var _g = "";
-            if (es.glow > 0) {
+            if (es.glow.width > 0) {
                 _defs += '<filter id="theBlur' + es.nr + '"' +
                     'filterUnits="userSpaceOnUse"' +
                     'x="0" y="0" width="1000" height="1000">' +
-                    '<feGaussianBlur in="SourceGraphic" stdDeviation="' + es.glow + '" />' +
+                    '<feGaussianBlur in="SourceGraphic" stdDeviation="' + es.glow.width + '" />' +
                     '</filter>'
 
                 for (var i = 0; i < es.glow.intent; i++) {
@@ -282,8 +275,7 @@ var WF = {
 
             }
 
-
-            $(container).append('<div style="position:absolute; top:' + es.std.top + 'px; left:' + es.std.left + 'px; border: 1px solid transparent;width:' + es.std.w + 'px; height:' + es.std.h + 'px" id="' + wid_id + '_' + es.std.nr + '_knob_bar">\
+            $(container).append('<div data-bind="style:{ left: '+_es+'left+\'px\' }"  style="position:absolute; border: 1px solid transparent;width:' + es.std.w + 'px; height:' + es.std.h + 'px" id="' + wid_id + '_' + es.std.nr + '_knob_bar">\
             <svg \
                 viewBox="0 0 1000 1000"\
                 width="100%" \
@@ -291,7 +283,7 @@ var WF = {
             >\
             <defs>\
             <path id="svg_knob_bar' + es.std.nr + '" stroke-width=' + es.str.width + ' fill="none"/>\
-          ' + _defs + '\
+             ' + _defs + '\
             </defs>\
             <g id="blurred">\
                  ' + _g + '\
@@ -299,6 +291,9 @@ var WF = {
             </g>\
             </svg>\
             </div>');
+            ko.applyBindings(wid, document.getElementById(wid_id + '_' + es.std.nr + '_knob_bar'));
+
+
 
             $('#' + wid_id + '_' + es.std.nr + '_knob_bar').click(function () {
                 $(".set").hide();
@@ -309,25 +304,23 @@ var WF = {
                     .resizable("destroy");
                 $(this)
                     .addClass("element_selected")
-                    .draggable({
-                        containment: container,
-                        stop: function (event, ui) {
-                            elements[_nr].es.top = ui.position.top;
-                            elements[_nr].es.left = ui.position.left;
-                            add_settings()
-
-                        }
-                    })
-                    .resizable({
-                        aspectRatio: true,
-                        handles: "se",
-                        stop: function (event, ui) {
-                            elements[_nr].es.size = ui.size.width;
-
-                            add_settings()
-
-                        }
-                    });
+//                    .draggable({
+//                        containment: container,
+//                        stop: function (event, ui) {
+//                            wid.elements[_nr].std.left(ui.position.left);
+//                            wid.elements[_nr].std.top(ui.position.top);
+//                        }
+//                    })
+//                    .resizable({
+//                        aspectRatio: true,
+//                        handles: "se",
+//                        stop: function (event, ui) {
+//                            wid.elements[_nr].std.width = ui.size.width;
+//                            wid.elements[_nr].std.height = ui.size.height;
+//
+//
+//                        }
+//                    });
             });
 
 
@@ -341,113 +334,21 @@ var WF = {
         }
 
 
-        function add_settings() {
-            $("#set" + es.std.nr).remove();
-            $("#wgs_content").append('' +
-                    '<div id="set' + es.std.nr + '" class="set">' +
-                    '<hr>' +
-//                    '<table>' +
-//
-//                    '<tr>' +
-//                    '<td>stroke_w</td>' +
-//                    '<td><input value="' + elements[_nr].es.stroke_w + '" class="element_elem_settings" id="' + es.std.nr + '-stroke_w"></td>' +
-//                    '</tr>' +
-//                    '<tr>' +
-//                    '<td>stroke_Mode</td>' +
-//                    '<td><select value="' + elements[_nr].es.stroke_w + '" class="element_elem_settings" id="' + es.std.nr + '-stroke_mode">' +
-//                    '<option value="color">color</option>' +
-//                    '<option value="img">image</option>' +
-//                    '<option value="gard">Farbverlauf</option>' +
-//                    '</td>' +
-//                    '</tr>' +
-//                    '<tr>' +
-//                    '<td>stroke_color</td>' +
-//                    '<td><input value="#' + elements[_nr].es.color + '" class="color element_elem_settings" id="' + es.std.nr + '-stroke_color"></td>' +
-//                    '</tr>' +
-//                    '<tr>' +
-//                    '<td>stroke_url</td>' +
-//                    '<td><input value="' + elements[_nr].es.stroke_w + '" class="element_elem_settings" id="' + es.std.nr + '-stroke_url"></td>' +
-//                    '</tr>' +
-//                    '<tr>' +
-//                    '<td>stroke_gard1</td>' +
-//                    '<td><input value="' + elements[_nr].es.stroke_grad1 + '" class="color element_elem_settings" id="' + es.std.nr + '-stroke_gard1"></td>' +
-//                    '</tr>' +
-//                    '<tr>' +
-//                    '<td>stroke_gard2</td>' +
-//                    '<td><input value="' + elements[_nr].es.stroke_grad2 + '" class="color element_elem_settings" id="' + es.std.nr + '-stroke_gard2"></td>' +
-//                    '</tr>' +
-//                    '<tr>' +
-//                    '<td>start_winkel</td>' +
-//                    '<td><input value="' + elements[_nr].es.start_winkel + '"  class="element_elem_settings" id="' + es.std.nr + '-start_winkel"></td>' +
-//                    '</tr>' +
-//                    '<tr>' +
-//                    '<td>stop_winkel</td>' +
-//                    '<td><input value="' + elements[_nr].es.stop_winkel + '"  class="element_elem_settings" id="' + es.std.nr + '-stop_winkel"></td>' +
-//                    '</tr>' +
-//                    '<tr>' +
-//                    '<td>Größe</td>' +
-//                    '<td><input value="' + elements[_nr].es.size + '"  class="element_elem_settings" id="' + es.std.nr + '-size"></td>' +
-//                    '</tr>' +
-//                    '<tr>' +
-//                    '<td>Links</td>' +
-//                    '<td><input value="' + elements[_nr].es.left + '"   class="element_elem_settings" id="' + es.std.nr + '-left"></td>' +
-//                    '</tr>' +
-//                    '<tr>' +
-//                    '<td>Oben</td>' +
-//                    '<td><input value="' + elements[_nr].es.top + '"  class="element_elem_settings" id="' + es.std.nr + '-top"></td>' +
-//                    '</tr>' +
-//                    '<tr>' +
-//                    '<td>max</td>' +
-//                    '<td><input value="' + elements[_nr].es.max + '" class="element_elem_settings" id="' + es.std.nr + '-max"></td>' +
-//                    '</tr>' +
-//                    '<tr>' +
-//                    '<td>min</td>' +
-//                    '<td><input value="' + elements[_nr].es.min + '" class="element_elem_settings" id="' + es.std.nr + '-min"></td>' +
-//                    '</tr>' +
-//                    '<tr>' +
-//                    '<td>val</td>' +
-//                    '<td><input value="' + elements[_nr].es.val + '" class="element_elem_settings" id="' + es.std.nr + '-val"></td>' +
-//                    '</tr>' +
-//                    '<tr>' +
-//                    '<td>Glow</td>' +
-//                    '<td><input value="' + elements[_nr].es.glow + '" class="element_elem_settings" id="' + es.std.nr + '-glow"></td>' +
-//                    '</tr>' +
-//                    '<tr>' +
-//                    '<td>Glow intent</td>' +
-//                    '<td><input value="' + elements[_nr].es.glow_intent + '" class="element_elem_settings" style="width:30px" type="number" max=9 min=0 id="' + es.std.nr + '-glow_intent"></td>' +
-//                    '</tr>' +
-//                    '<tr>' +
-//                    '<td>Glow color</td>' +
-//                    '<td><input value="' + elements[_nr].es.glow_color + '"class="color element_elem_settings" id="' + es.std.nr + '-glow_color"></td>' +
-//                    '</tr>' +
-//                    '</table>' +
-                    '</div>'
-            );
-
-            WF.add_es_std(_nr);
-            WF.add_es_str(_nr);
-            WF.add_es_glow(_nr);
-            WF.add_es_grad(_nr);
-
-            new jscolor.init();
-
-            $('#id_type' + es.std.nr).selectBoxIt({
-                theme: "jqueryui"
-            });
-
-            $(".element_elem_settings").change(function () {
-                var _element = $(this).attr("id").split("-");
-                elements[_element[0]].elem_settings[_element[1]] = $(this).val();
-                $('#' + wid_id + '_' + es.std.nr + '_knob_bar').remove();
-                paint();
-                if (es.std.nr + '-stroke_mode' == $(this).attr("id")) {
-                    stroke_opt();
-                }
-            });
+        $("#wgs_content").append('<div id="set' + es.std.nr + '" class="set"></div>');
 
 
-            stroke_opt();
-        }
+        WF.add_es_std(_nr);
+        WF.add_es_knobbar(_nr);
+        WF.add_es_str(_nr);
+        WF.add_es_glow(_nr);
+        WF.add_es_grad(_nr);
+
+        ko.applyBindings(wid, document.getElementById("set" + _nr));
+
+//            new jscolor.init();
+
+        stroke_opt();
+
 
         function stroke_opt() {
 //            if (wid.elements[es.std.nr].es.stroke_mode == "color") {
@@ -472,12 +373,9 @@ var WF = {
 //                $('#' + es.std.nr + '-stroke_color').parent().parent().hide();
 //                $('#' + es.std.nr + '-stroke_url').parent().parent().hide();
 //            }
-
         }
 
-        paint();
-        add_settings();
-
+        paint(_nr);
     },
 
     add_new_widget: function () {
@@ -489,179 +387,179 @@ var WF = {
         })
     },
 
-    add_widget_elem_settings: function (type) {
+    add_es_knobbar: function (nr) {
+        var es = 'elements[' + nr + '].';
+        var data = '<div>' +
+            '<button class="set_btn" id="' + nr + '_spec-btn">Spezifisch:</button><br>' +
+            '<table style="display: none">' +
+            '<td>Start Winkel</td>' +
+            '<td><input type="number" data-bind="value: ' + es + 'start_winkel"   class="es_spec es_number"></td>' +
+            '</tr>' +
+            '<tr>' +
+            '<td>Stop Winkel</td>' +
+            '<td><input type="number" data-bind="value: ' + es + 'stop_winkel"   class="es_spec es_number"></td>' +
+            '</tr>' +
+            '<tr>' +
+            '<td>Max</td>' +
+            '<td><input type="number" data-bind="value: ' + es + 'max" class="es_spec es_number""></td>' +
+            '</tr>' +
+            '<tr>' +
+            '<td>MIN</td>' +
+            '<td><input type="number" data-bind="value: ' + es + 'min" class="es-spec es_number"></td>' +
+            '</tr>' +
+            '</table>' +
+            '<hr>' +
+            '</div>';
 
+        $("#set" + nr).append(data);
+
+        $('#' + nr + '_spec-btn')
+            .button()
+            .click(function () {
+                $(this).next().next().toggle();
+                $(this).removeClass("ui-state-focus")
+            });
 
     },
 
     add_es_std: function (nr) {
 
-        var es = wid.elements[nr];
+        var es = 'elements[' + nr + '].std.';
         var data = '<div>' +
             '<button class="set_btn" id="' + nr + '_std-btn">Standart:</button><br>' +
             '<table style="display: none">' +
             '<tr>' +
-            '<td width="100px">id_type</td>' +
-            '<td><select class="id_type" id="' + nr + '_std-id_type">' +
-            '<option value="ioid">ID</option>' +
-            '<option value="child">Verärbung</option>' +
-            '<option value="var">Variable</option>' +
+            '<td width="100px">id</td>' +
+            '<td><select data-bind="value: ' + es + 'id" class="id_type" id="' + nr + '_std-id">' +
             '</select></td>' +
             '</tr>' +
             '<tr>' +
             '<td>Höhe</td>' +
-            '<td><input type="number"  value="' + es.std.h + '"   class="es_std es_number" id="' + nr + '_std-h"></td>' +
+            '<td><input type="number"  data-bind="value: ' + es + 'h"   class="es_std es_number"></td>' +
             '</tr>' +
             '<tr>' +
             '<td>Breite</td>' +
-            '<td><input type="number"  value="' + es.std.w + '"   class="es_std es_number" id="' + nr + '_std-w"></td>' +
+            '<td><input type="number"  data-bind="value: ' + es + 'w"  class="es_std es_number"></td>' +
             '</tr>' +
             '<tr>' +
             '<td>Oben</td>' +
-            '<td><input type="number"  value="' + es.std.top + '" class="es_std es_number" id="' + nr + '_std-top"></td>' +
+            '<td><input type="number"  data-bind="value: ' + es + 'top" class="es_std es_number""></td>' +
             '</tr>' +
             '<tr>' +
             '<td>Links</td>' +
-            '<td><input type="number"  value="' + es.std.left + '"class="es_std es_number" id="' + nr + '_std-left"></td>' +
+            '<td><input type="number"  data-bind="value: ' + es + 'left" class="es_std es_number"></td>' +
             '</tr>' +
             '<tr>' +
             '<td>Transparens</td>' +
-            '<td><input type="number" min="0.0" max="1.0" step="0.1" value="' + es.std.opa + '" class="es_std es_number" id="' + nr + '_std-opa"></td>' +
+            '<td><input type="number" min="0.0" max="1.0" step="0.1" data-bind="value: ' + es + 'opa"  class="es_std es_number"></td>' +
             '</tr>' +
             '</table>' +
             '<hr>' +
             '</div>';
 
+        $("#set" + nr).append(data);
 
-        $("#set"+nr).append(data);
-
-
-        $("#" + nr + "_std-id_type").selectBoxIt({
-            theme: "jqueryui"
+        $("#" + nr + "_std-id").selectBoxIt({
+            theme: "jqueryui",
+            populate: wid.elements[nr].std.id
         });
 
-        $('#'+nr + '_std-btn')
+        $('#' + nr + '_std-btn')
             .button()
-            .click(function() {
+            .click(function () {
                 $(this).next().next().toggle();
                 $(this).removeClass("ui-state-focus")
             });
-
-        $(".es_std").change(function(){
-            var nr = $(this).attr("id").split("_")[0];
-
-            elements[nr].std[attr] = $(this).val()
-        })
-
-
     },
-    add_es_str: function(nr){
+    add_es_str: function (nr) {
 
-        var es = wid.elements[nr];
+        var es = 'elements[' + nr + '].str.';
         var data = '<div>' +
             '<button class="set_btn" id="' + nr + '_str-btn">Stroke:</button><br>' +
             '<table style="display: none">' +
             '<tr>' +
             '<td>Breite</td>' +
-            '<td><input data-bind="value: height" class="es_std" id="' + nr + '_str-width"></td>' +
+            '<td><input data-bind="value: ' + es + 'width" class="es_str' + nr + '"></td>' +
             '</tr>' +
             '<tr>' +
             '<td>Transparens</td>' +
-            '<td><input value="' + es.std.opa + '"   class="es_std" id="' + nr + '_str-opa"></td>' +
+            '<td><input data-bind="value: ' + es + 'opa" class="es_str' + nr + '"></td>' +
             '</tr>' +
             '<tr>' +
             '<td width="100px">Mode</td>' +
-            '<td><select class="id_type" id="' + nr + '_str-mode">' +
-            '<option value="color">Color</option>' +
-            '<option value="img">Image</option>' +
-            '<option value="grad">Farbverlauf</option>' +
+            '<td><select data-bind="value: ' + es + 'mode" class="id_type es_str' + nr + '" id="' + nr + '_str-mode" >' +
             '</select></td>' +
             '</tr>' +
             '<tr>' +
             '<td>color</td>' +
-            '<td><input value="' + es.std.top + '" class="color es_std" id="' + nr + '_str-Color"></td>' +
+            '<td><input data-bind="value: ' + es + 'color" class="color es_str' + nr + '"></td>' +
             '</tr>' +
             '<tr>' +
             '<td>Image</td>' +
-            '<td><input value="' + es.std.top + '" class="es_std" id="' + nr + '_std-url"></td>' +
+            '<td><input data-bind="value: ' + es + 'img" class="es_str' + nr + '"></td>' +
             '</tr>' +
             '</table>' +
             '<hr>' +
             '</div>';
 
-        $("#set"+nr).append(data);
-
-        ko.cleanNode;
-
-        ko.applyBindings(wid);
+        $("#set" + nr).append(data);
 
         $("#" + nr + "_str-mode").selectBoxIt({
-            theme: "jqueryui"
+            theme: "jqueryui",
+            populate: ["Color", "Image", "Farbverlauf"]
         });
 
-        $('#'+nr + '_str-btn')
+        $('#' + nr + '_str-btn')
             .button()
-            .click(function() {
+            .click(function () {
                 $(this).next().next().toggle();
                 $(this).removeClass("ui-state-focus")
             });
 
-        $(".es_str").change(function(){
-            var nr = $(this).attr("id").split("_")[0];
-
-            elements[nr].str[attr] = $(this).val()
-        })
 
     },
-    add_es_glow: function(nr){
+    add_es_glow: function (nr) {
 
-        var es = wid.elements[nr];
+        var es = 'elements["' + nr + '"].glow.';
         var data = '<div>' +
             '<button class="set_btn" id="' + nr + '_glow-btn">Glow:</button><br>' +
             '<table style="display: none">' +
             '<td width="100px">Mode</td>' +
-            '<td><select class="id_type" id="' + nr + '_glow-mode">' +
-            '<option value="grafik">Grafik</option>' +
-            '<option value="stroke">Stroke</option>' +
+            '<td><select data-bind="value: ' + es + 'mode" class="id_type" id="' + nr + '_glow-mode">' +
             '</select></td>' +
             '</tr>' +
             '<tr>' +
             '<td>Weite:</td>' +
-            '<td><input type="number" value="' + es.std.top + '" class="es_number es_glow" id="' + nr + '_glow-width"></td>' +
+            '<td><input data-bind="value: ' + es + 'width" type="number" class="es_number es_glow" id="' + nr + '_glow-width"></td>' +
             '</tr>' +
             '<tr>' +
             '<td>Stärke</td>' +
-            '<td><input  type="number" min="1" max="10"   value="' + es.std.top + '" class="es_number es_glow" id="' + nr + '_glow-intent"></td>' +
+            '<td><input data-bind="value: ' + es + 'intent"  type="number" min="1" max="10" class="es_number es_glow" id="' + nr + '_glow-intent"></td>' +
             '</tr>' +
             '<tr>' +
             '<td>Farbe</td>' +
-            '<td><input value="' + es.std.top + '" class="color es_glow" id="' + nr + '_glow-Color"></td>' +
+            '<td><input data-bind="value: ' + es + 'color" class="color es_glow" id="' + nr + '_glow-Color"></td>' +
             '</tr>' +
             '</table>' +
             '<hr>' +
             '</div>';
 
-        $("#set"+nr).append(data);
+        $("#set" + nr).append(data);
 
-        $('#'+nr + '_glow-btn')
+        $('#' + nr + '_glow-btn')
             .button()
-            .click(function() {
+            .click(function () {
                 $(this).next().next().toggle();
                 $(this).removeClass("ui-state-focus")
             });
 
         $("#" + nr + "_glow-mode").selectBoxIt({
-            theme: "jqueryui"
+            theme: "jqueryui",
+            populate: ["Grafik", "Stroke"]
         });
 
-        $(".es_glow").change(function(){
-            var nr = $(this).attr("id").split("_")[0];
-
-            elements[nr].glow[attr] = $(this).val()
-        })
-
     },
-    add_es_grad: function(nr){
+    add_es_grad: function (nr) {
 
         var es = wid.elements[nr];
         var data = '<div>' +
@@ -671,23 +569,22 @@ var WF = {
             '<hr>' +
             '</div>';
 
-        $("#set"+nr).append(data);
+        $("#set" + nr).append(data);
 
-        $('#'+nr + '_grad-btn')
+        $('#' + nr + '_grad-btn')
             .button()
-            .click(function() {
+            .click(function () {
                 $(this).next().next().toggle();
                 $(this).removeClass("ui-state-focus")
             });
 
-        $(".es_grad").change(function(){
+        $(".es_grad").change(function () {
             var nr = $(this).attr("id").split("_")[0];
 
             elements[nr].grad[attr] = $(this).val()
         })
 
     },
-
 
 
 };
