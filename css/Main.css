@@ -66,12 +66,12 @@ body {
 }
 
 .img_iconbar {
-    height: 21px;
+    height: 21px !important;
     width: 21px;
     margin-top: 1px;
-    padding: 2px;
+    padding: 1px;
     text-align: center;
-    border: 1px solid transparent;
+    border: 1px solid rgba(0, 0, 0, 0) !important;
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
     border-radius: 4px;
@@ -367,7 +367,7 @@ body {
     font: large !important;
     font-size: 10px !important;
     height: 25px !important;
-    width: 150px !important;
+    width: 149px !important;
 
 }
 .element_selected{
@@ -399,7 +399,7 @@ body {
     width: 145px;
 }
 .color{
-    width: 149px !important;
+    width: 151px !important;
     border: none;
     height: 20px;
 
