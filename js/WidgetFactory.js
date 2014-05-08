@@ -17,7 +17,6 @@ var wid = {
 };
 
 
-
 var WF = {
     socket: {},
     elem_settings: {},
@@ -133,47 +132,106 @@ var WF = {
 
     add_knob: function (container, _nr) {
 
-        wid.elements[_nr] = {};
-        wid.elements[_nr]["type"] = "knob";
-        wid.elements[_nr]["nr"] = _nr;
-        wid.elements[_nr]["name"] = wid_id + '_' + _nr + "_knob";
-        wid.elements[_nr]["elem_settings"] = {};
 
-        var elem_settings = {
-            parrent: wid.elements[_nr].std.parrent || "new_widget_x",
-            size: wid.elements[_nr].es.width || 300,
-            left: wid.elements[_nr].es.left || 0,
-            top: wid.elements[_nr].es.top || 0,
-            max: wid.elements[_nr].es.max || 100,
-            min: wid.elements[_nr].es.min || 0
+        wid.elements[_nr] = {
+            std: {
+                id: ["Master"],
+                parrent: "new_widget_x",
+                h: 100,
+                w: 100,
+                left: "0",
+                top: "0",
+                nr: _nr.toString(),
+                opa: 1,
+                zindex:1
+            },
+
+            start_winkel: -135,
+            stop_winkel: 135,
+            max: 100,
+            min: "0",
+            val: 100,
+
+            glow: {
+                mode: "Stroke",
+                width: "0",
+                intent: "0",
+                color: "00FFFF"
+            },
+            fill: {
+                mode: "Color",
+                color: "FFFFFF",
+                url: " ",
+                size: 100,
+                opa: 1
+            },
+            str: {
+                width: " ",
+                mode: "color",
+                color: "FF0000",
+                url: 100,
+                opa: 1
+            },
+            grad: {
+                pos: [],
+                color: [],
+                opa: []
+            }
         };
-        wid.elements[_nr]["elem_settings"] = elem_settings;
+
+        $("#wgs_content").append('<div id="set' + _nr + '" class="set"></div>');
+
+        WF.add_es_std(_nr);
+        WF.add_es_knob(_nr);
+        WF.add_es_fill(_nr);
+        WF.add_es_str(_nr);
+        WF.add_es_glow(_nr);
+        WF.add_es_grad(_nr);
+
+
 
         function paint() {
+            $(".element_selected")
+                .removeClass("element_selected")
+
+            var es = wid.elements[_nr];
 
             var _defs = "";
+            var _fill ="";
             var _g = "";
-            $(container).append('<div style="position:absolute; top:' + es.top + 'px; left:' + es.left + 'px; border: 1px solid transparent;width:' + es.size + 'px; height:' + es.size + 'px" id="' + wid_id + '_' + es.nr + '_knob">\
+
+            if (wid.elements[_nr].fill.mode() == "Color"){
+                _fill = "fill=#"+es.fill.color();
+            }
+            if (wid.elements[_nr].fill.mode() == "Image"){
+                _fill = 'fill="url(#'+_nr+'img_fill)"';
+                _defs +='<pattern id="'+_nr+'img_fill" patternUnits="userSpaceOnUse" width="1000" height="1000">'+
+                        '<image xlink:href="'+es.fill.url()+'" x="0" y="0" width="1000" height="1000" />'+
+                        '</pattern>';
+            }
+
+
+            $(container).append('<div class="element_selected" style="z-index:'+ es.std.zindex() +'; position:absolute; top:' + es.std.top() + 'px; left:' + es.std.left() + 'px; border: 1px solid transparent;width:' + es.std.w() + 'px; height:' + es.std.h() + 'px" id="' + wid_id + '_' + es.std.nr() + '_knob">\
             <svg \
                 viewBox="0 0 1000 1000"\
                 width="100%" \
                 height="100%"\
             >\
             <defs>\
-            <circle id="svg_knob' + es.nr + '" cx="500" cy="500" r="500" stroke="black" stroke-width="1" fill="blue" />\
+            <circle id="svg_knob' + es.std.nr() + '" cx="500" cy="500" r="'+(500- (es.str.width()))+'"  />\
           ' + _defs + '\
             </defs>\
             <g id="blurred">\
                  ' + _g + '\
-                <use xlink:href="#svg_knob' + es.nr + '" style="stroke:red" " />\
+                <use xlink:href="#svg_knob' + es.std.nr() + '" '+_fill+' style="fill-opacity:'+es.fill.opa()+'; stroke:#'+es.str.color()+'; stroke-width:'+es.str.width()+'; stroke-opacity:'+es.str.opa()+';  " />\
             </g>\
             </svg>\
             </div>');
 
 
-            $('#' + wid_id + '_' + es.nr + '_knob').click(function () {
+            $('#' + wid_id + '_' + es.std.nr() + '_knob').click(function () {
                 $(".set").hide();
-                $("#set" + es.nr).show();
+                $("#set" + es.std.nr()).show();
                 $(".element_selected")
                     .removeClass("element_selected")
                     .draggable("destroy")
@@ -183,8 +241,8 @@ var WF = {
                     .draggable({
                         containment: container,
                         stop: function (event, ui) {
-                            elements[_nr].es.top = ui.position.top;
-                            elements[_nr].es.left = ui.position.left;
+                            es.std.top(ui.position.top);
+                            es.std.left(ui.position.left);
 
 
                         }
@@ -193,15 +251,23 @@ var WF = {
                         aspectRatio: true,
                         handles: "se",
                         stop: function (event, ui) {
-                            elements[_nr].es.size = ui.size.width;
-
-
+                          es.std.w(ui.size.width);
+                          es.std.h(ui.size.height);
                         }
                     });
             });
         }
 
-        paint();
+
+
+        new jscolor.init();
+
+        ko.applyBindings(wid, document.getElementById("set" + _nr));
+        ko.watch(wid.elements[_nr], {wrap: true, depth: -1}, function () {
+            $('#' + wid_id + '_' + _nr + '_knob').remove();
+            paint(_nr)
+        });
+        paint(_nr);
     },
 
     add_knob_bar: function (container, _nr) {
@@ -215,7 +281,8 @@ var WF = {
                 left: "0",
                 top: "0",
                 nr: _nr.toString(),
-                opa: 1
+                opa: 1,
+                zindex:1
             },
 
             start_winkel: -135,
@@ -236,7 +303,7 @@ var WF = {
                 width: 100,
                 mode: "color",
                 color: "FF0000",
-                url: 100,
+                url: " ",
                 opa: 1
             },
             grad: {
@@ -245,13 +312,20 @@ var WF = {
                 opa: []
             }
         };
-        ko.watch(wid.elements[_nr], {wrap:true, depth:-1});
 
-//        wid.elements[_nr] = ({});
-        var es = wid.elements[_nr];
+        $("#wgs_content").append('<div id="set' + _nr + '" class="set"></div>');
+
+        WF.add_es_std(_nr);
+        WF.add_es_knobbar(_nr);
+        WF.add_es_str(_nr);
+        WF.add_es_glow(_nr);
+        WF.add_es_grad(_nr);
 
 
         function paint(_nr) {
+
+            $(".element_selected")
+                .removeClass("element_selected");
 
             var es = wid.elements[_nr];
 
@@ -266,6 +340,7 @@ var WF = {
 
             var _defs = "";
             var _g = "";
+            var _fill="";
             if (parseInt(es.glow.width()) > 0 && parseInt(es.glow.intent()) > 0) {
                 _defs += '<filter id="theBlur' + es.std.nr() + '"' +
                     'filterUnits="userSpaceOnUse"' +
@@ -277,8 +352,16 @@ var WF = {
                     _g += '<use xlink:href="#svg_knob_bar' + es.std.nr() + '"  style=" ' + es.cap() + '; stroke:#' + es.glow.color() + '" filter="url(#theBlur' + es.std.nr() + ')"/> '
                 }
             }
+            if (wid.elements[_nr].str.mode() == "Image"){
+                _fill = 'url(#'+_nr+'img_fill)';
+                _defs +='<pattern id="'+_nr+'img_fill" patternUnits="userSpaceOnUse" width="1000" height="1000">'+
+                    '<image xlink:href="'+es.str.url()+'" x="0" y="0" width="1000" height="1000" />'+
+                    '</pattern>';
+            }else{
+                _fill = '#' + es.str.color();
+            }
 
-            $(container).append('<div style=" left:' + es.std.left() + 'px;top:' + es.std.top() + 'px; position:absolute; border: 1px solid transparent;width:' + es.std.w() + 'px; height:' + es.std.h() + 'px" id="' + wid_id + '_' + es.std.nr() + '_knob_bar">\
+            $(container).append('<div class="element_selected" style=" left:' + es.std.left() + 'px;top:' + es.std.top() + 'px;z-index:'+ es.std.zindex() +';  position:absolute; border: 1px solid transparent;width:' + es.std.w() + 'px; height:' + es.std.h() + 'px" id="' + wid_id + '_' + es.std.nr() + '_knob_bar">\
             <svg \
                 viewBox="0 0 1000 1000"\
                 width="100%" \
@@ -290,20 +373,24 @@ var WF = {
             </defs>\
             <g id="blurred">\
                  ' + _g + '\
-                <use xlink:href="#svg_knob_bar' + es.std.nr() + '" style="stroke:#' + es.str.color() + '; ' + es.cap() + ' ; stroke-opacity: '+es.str.opa()+'"/>\
+                <use xlink:href="#svg_knob_bar' + es.std.nr() + '" style="stroke:'+ _fill +';'+ es.cap() + ' ; stroke-opacity: ' + es.str.opa() + '"/>\
             </g>\
             </svg>\
             </div>');
-            ko.applyBindings(wid, document.getElementById(wid_id + '_' + es.std.nr() + '_knob_bar'));
+//            ko.applyBindings(wid, document.getElementById(wid_id + '_' + es.std.nr() + '_knob_bar'));
 
 
             $('#' + wid_id + '_' + es.std.nr() + '_knob_bar').click(function () {
                 $(".set").hide();
                 $("#set" + es.std.nr()).show();
-                $(".element_selected")
-                    .removeClass("element_selected")
-                    .draggable("destroy")
-                    .resizable("destroy");
+                if (!$(this).hasClass("element_selected")){
+                    $(".element_selected")
+                        .removeClass("element_selected")
+                        .draggable("destroy")
+                        .resizable("destroy");
+                    WF.make_drag_resize($(this))
+                }
+
                 $(this)
                     .addClass("element_selected")
                     .draggable({
@@ -319,12 +406,9 @@ var WF = {
                         stop: function (event, ui) {
                             wid.elements[_nr].std.w(ui.size.width);
                             wid.elements[_nr].std.h(ui.size.height);
-
-
                         }
                     });
             });
-
 
             if (winkel < 180) {
 
@@ -335,58 +419,13 @@ var WF = {
 
         }
 
-
-        $("#wgs_content").append('<div id="set' + _nr + '" class="set"></div>');
-
-
-        WF.add_es_std(_nr);
-        WF.add_es_knobbar(_nr);
-        WF.add_es_str(_nr);
-        WF.add_es_glow(_nr);
-        WF.add_es_grad(_nr);
-
-//
-
-           new jscolor.init();
-
-        stroke_opt();
-
-
-        function stroke_opt() {
-//            if (wid.elements[es.std.nr].es.stroke_mode == "color") {
-//                $('#' + es.std.nr + '-stroke_color').parent().parent().show();
-//
-//                $('#' + es.std.nr + '-stroke_gard1').parent().parent().hide();
-//                $('#' + es.std.nr + '-stroke_gard2').parent().parent().hide();
-//                $('#' + es.std.nr + '-stroke_url').parent().parent().hide()
-//            }
-//            if (wid.elements[es.std.nr].es.stroke_mode == "img") {
-//                $('#' + es.std.nr + '-stroke_url').parent().parent().show();
-//
-//                $('#' + es.std.nr + '-stroke_gard1').parent().parent().hide();
-//                $('#' + es.std.nr + '-stroke_gard2').parent().parent().hide();
-//                $('#' + es.std.nr + '-stroke_color').parent().parent().hide();
-//
-//            }
-//            if (wid.elements[es.std.nr].es.stroke_mode == "gard") {
-//                $('#' + es.std.nr + '-stroke_gard1').parent().parent().show();
-//                $('#' + es.std.nr + '-stroke_gard2').parent().parent().show();
-//
-//                $('#' + es.std.nr + '-stroke_color').parent().parent().hide();
-//                $('#' + es.std.nr + '-stroke_url').parent().parent().hide();
-//            }
-        }
-
-        paint(_nr);
+        new jscolor.init();
         ko.applyBindings(wid, document.getElementById("set" + _nr));
-
-        ko.watch(wid.elements[_nr], {depth: -1}, function () {
-            console.log("repaint")
-//            ko.cleanNode()
-            $('#'+wid_id + '_' + _nr + '_knob_bar').remove();
+        ko.watch(wid.elements[_nr], {wrap: true, depth: -1}, function () {
+            $('#' + wid_id + '_' + _nr + '_knob_bar').remove();
             paint(_nr)
-
-        })
+        });
+        paint(_nr);
     },
 
     add_new_widget: function () {
@@ -439,12 +478,47 @@ var WF = {
         $("#" + nr + "_spec-cap").selectBoxIt({
             theme: "jqueryui",
             populate: [
-                {value:"stroke-linecap:butt", text:"butt" },
-                {value:"stroke-linecap:round", text:"Rund" },
-                {value:"stroke-linecap:square", text:"square" }
+                {value: "stroke-linecap:butt", text: "butt" },
+                {value: "stroke-linecap:round", text: "Rund" },
+                {value: "stroke-linecap:square", text: "square" }
             ]
         });
 
+    },
+    add_es_knob: function (nr) {
+        var es = 'elements[' + nr + '].';
+        var data = '<div>' +
+            '<button class="set_btn" id="' + nr + '_spec-btn">Spezifisch:</button><br>' +
+            '<table style="display: none">' +
+            '<tr>' +
+            '<td width="100px">Start Winkel</td>' +
+            '<td><input type="number" data-bind="value: ' + es + 'start_winkel" class="es_spec es_number"></td>' +
+            '</tr>' +
+            '<tr>' +
+            '<td>Stop Winkel</td>' +
+            '<td><input type="number" data-bind="value: ' + es + 'stop_winkel" class="es_spec es_number"></td>' +
+            '</tr>' +
+            '<tr>' +
+            '<td>Max</td>' +
+            '<td><input type="number" data-bind="value: ' + es + 'max" class="es_spec es_number""></td>' +
+            '</tr>' +
+            '<tr>' +
+            '<td>MIN</td>' +
+            '<td><input type="number" data-bind="value: ' + es + 'min" class="es-spec es_number"></td>' +
+            '</tr>' +
+
+            '</table>' +
+            '<hr>' +
+            '</div>';
+
+        $("#set" + nr).append(data);
+
+        $('#' + nr + '_spec-btn')
+            .button()
+            .click(function () {
+                $(this).next().next().toggle();
+                $(this).removeClass("ui-state-focus")
+            });
     },
 
     add_es_std: function (nr) {
@@ -477,6 +551,10 @@ var WF = {
             '<tr>' +
             '<td>Transparens</td>' +
             '<td><input type="number" min="0.0" max="1.0" step="0.1" data-bind="value: ' + es + 'opa"  class="es_std es_number"></td>' +
+            '</tr>'+
+            '<tr>' +
+            '<td>Ebende</td>' +
+            '<td><input type="number" data-bind="value: ' + es + 'zindex"  class="es_std es_number"></td>' +
             '</tr>' +
             '</table>' +
             '<hr>' +
@@ -504,24 +582,24 @@ var WF = {
             '<table style="display: none">' +
             '<tr>' +
             '<td width="100px">Breite</td>' +
-            '<td><input data-bind="value: ' + es + 'width" class="es_str' + nr + ' es_number"/></td>' +
+            '<td><input type="number"  data-bind="value: ' + es + 'width" class="es_str' + nr + ' es_number"/></td>' +
             '</tr>' +
             '<tr>' +
             '<td>Transparens</td>' +
-            '<td><input data-bind="value: ' + es + 'opa" class="es_str' + nr + ' es_number"/></td>' +
+            '<td><input type="number"  data-bind="value: ' + es + 'opa" class="es_str' + nr + ' es_number"/></td>' +
             '</tr>' +
             '<tr>' +
             '<td width="100px">Mode</td>' +
             '<td><select data-bind="value: ' + es + 'mode" class="id_type es_str' + nr + '" id="' + nr + '_str-mode" >' +
             '</select></td>' +
             '</tr>' +
-            '<tr>' +
-            '<td>color</td>' +
+            '<tr class="' + nr + '_str-color">' +
+            '<td>Color</td>' +
             '<td><input data-bind="value: ' + es + 'color" class="color es_str' + nr + ' es_number"/></td>' +
             '</tr>' +
-            '<tr>' +
+            '<tr class="' + nr + '_str-img">' +
             '<td>Image</td>' +
-            '<td><input data-bind="value: ' + es + 'img" class="es_str' + nr + ' es_number"/></td>' +
+            '<td><input data-bind="value: ' + es + 'url" class="es_str' + nr + ' es_number"/></td>' +
             '</tr>' +
             '</table>' +
             '<hr>' +
@@ -541,6 +619,86 @@ var WF = {
                 $(this).removeClass("ui-state-focus")
             });
 
+        $("#" + nr + "_str-mode").change(function(){
+            if($(this).val() == "Color"){
+                $("." + nr + "_str-img").hide();
+                $("." + nr + "_str-color").show()
+            }
+            if($(this).val() == "Image"){
+                $("." + nr + "_str-color").hide();
+                $("." + nr + "_str-img").show();
+            }
+        });
+        if(wid.elements[nr].str.mode == "Color"){
+            $("." + nr + "_str-img").hide()
+        }
+        if(wid.elements[nr].str.mode == "Image"){
+            $("." + nr + "_str-color").hide()
+        }
+
+    },
+    add_es_fill: function (nr) {
+
+        var es = 'elements[' + nr + '].fill.';
+        var data = '<div>' +
+            '<button class="set_btn" id="' + nr + '_fill-btn">Füllung:</button><br>' +
+            '<table style="display: none">' +
+            '<td width="100px">Mode</td>' +
+            '<td><select data-bind="value: ' + es + 'mode" class="id_type es_fill' + nr + '" id="' + nr + '_fill-mode" >' +
+            '</select></td>' +
+            '</tr>' +
+            '<tr class="' + nr + '_fill-color">' +
+            '<td>Color</td>' +
+            '<td><input data-bind="value: ' + es + 'color" class="color es_fill' + nr + ' es_number"/></td>' +
+            '</tr>' +
+            '<tr class="' + nr + '_fill-img">' +
+            '<td>Image</td>' +
+            '<td><input data-bind="value: ' + es + 'url" class="es_fill' + nr + ' es_number"/></td>' +
+            '</tr>' +
+            '<tr class="' + nr + '_fill-img">' +
+            '<td>Image size</td>' +
+            '<td><input data-bind="value: ' + es + 'size" class="es_fill' + nr + ' es_number"/></td>' +
+            '</tr>'+
+            '</tr>' +
+            '<td>Transparenz</td>' +
+            '<td><input type="number" min="0" max="1" step="0.1" data-bind="value: ' + es + 'opa" class="es_fill' + nr + ' es_number"/></td>' +
+            '</tr>'+
+            '</table>' +
+            '<hr>' +
+            '</div>';
+
+        $("#set" + nr).append(data);
+
+        $("#" + nr + "_fill-mode").selectBoxIt({
+            theme: "jqueryui",
+            populate: ["Color", "Image", "Farbverlauf"]
+        });
+
+        $('#' + nr + '_fill-btn')
+            .button()
+            .click(function () {
+                $(this).next().next().toggle();
+                $(this).removeClass("ui-state-focus")
+            });
+
+        $("#" + nr + "_fill-mode").change(function(){
+            if($(this).val() == "Color"){
+                $("." + nr + "_fill-img").hide();
+                $("." + nr + "_fill-color").show()
+            }
+            if($(this).val() == "Image"){
+                $("." + nr + "_fill-color").hide();
+                $("." + nr + "_fill-img").show();
+            }
+        });
+
+
+        if(wid.elements[nr].fill.mode == "Color"){
+            $("." + nr + "_fill-img").hide()
+        }
+        if(wid.elements[nr].fill.mode == "Image"){
+            $("." + nr + "_fill-color").hide()
+        }
 
     },
     add_es_glow: function (nr) {
@@ -550,12 +708,12 @@ var WF = {
             '<button class="set_btn" id="' + nr + '_glow-btn">Glow:</button><br>' +
             '<table style="display: none">' +
             '<td width="100px">Mode</td>' +
-            '<td><select data-bind="value: ' + es+'mode" class="id_type" id="' + nr + '_glow-mode">' +
+            '<td><select data-bind="value: ' + es + 'mode" class="id_type" id="' + nr + '_glow-mode">' +
             '</select></td>' +
             '</tr>' +
             '<tr>' +
             '<td>Weite:</td>' +
-            '<td><input data-bind="value: ' + es+ 'width" type="number" class="es_number es_glow" id="' + nr + '_glow-width"></td>' +
+            '<td><input data-bind="value: ' + es + 'width" type="number" class="es_number es_glow" id="' + nr + '_glow-width"></td>' +
             '</tr>' +
             '<tr>' +
             '<td>Stärke</td>' +
@@ -610,6 +768,10 @@ var WF = {
         })
 
     },
+
+    make_drag_resize :function($this){
+
+    }
 
 
 };
