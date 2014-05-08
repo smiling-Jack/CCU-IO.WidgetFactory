@@ -78,7 +78,7 @@
                 <!--<li><a id="m_setup" class="item_font">Setup</a></li>-->
             </ul>
         </li>
-        <li class="menu-item"><a class="menu_font ">Compiler</a>
+        <li class="menu-item"><a class="menu_font ">Widget Builder</a>
             <ul>
                 <li></li>
                 <li></li>
@@ -102,7 +102,8 @@
 
     <img src="img/icon/move_to_folder.png" class="img_iconbar set_local" id="img_save_local" title="Speicher local"/>
     <img src="img/icon/folder.png" class="img_iconbar set_local" id="img_open_local" title="Öffnen local"/>
-    <button id="test">test</button>
+    <!--<button id="test">test</button>-->
+    <select id="wg_select"> </select>
     <input id="backcolor_var" style="margin-right:20px;float: right; font-size: 0" class="color img_iconbar" value="808080">
     <div id="backcolor_white" style="margin-right:10px;float: right;background-color: white" class="img_iconbar"></div>
     <div id="backcolor_black" style="margin-right:10px;float: right;background-color: #000000"class="img_iconbar"></div>
@@ -124,14 +125,15 @@
                         <td>Was:</td>
                         <td>
                             <select id="wgs_add_select">
-                            <option value="add_knob">Knob</option>
-                            <option value="add_knob_bar">Knob Bar</option>
                             </select>
                         </td>
                     </tr>
                     <tr>
                         <td>WO:</td>
-                        <td><div style="font-size: 13px; font-weight: bold ;" id="wgs_add_select_container" class="xs_combo"></div></td></td>
+                        <td>
+                            <select id="wgs_add_select_container">
+                            </select>
+                        </td>
                     </tr>
                 </table>
                 <br>
