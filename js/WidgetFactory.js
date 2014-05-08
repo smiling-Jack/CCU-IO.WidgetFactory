@@ -77,32 +77,28 @@ var WF = {
             theme: "jqueryui",
             populate: [
                 {value: "add_knob", text: "Knob" },
-                {value: "add_knob_bar", text: "Knob Bar" },
+                {value: "add_knob_bar", text: "Knob Bar" }
             ]
         });
-
 
         $("#wgs_add_select_container").selectBoxIt({
             theme: "jqueryui"
         });
 
-
         var wg_select_data = [];
 
         $("#wg_select").selectBoxIt({
             theme: "jqueryui",
-            populate: wg_select_data,
-
+            populate: wg_select_data
         });
 
-        $("#wg_select").bind("option-click",function(event){
-            console.log($("#wgs_add_select option:selected").text());
-            $(".element_selected").removeClass("element_selected")
+        $("#wg_select").bind("option-click", function (event) {
 
-            $.find("")
+            var _nr = $("#wg_select option:selected").val();
+
+WF.element_select($("#"+wid_id+"_"+_nr))
 
         });
-
 
         wid.wid_list.subscribe(function () {
             wg_select_data = wid.wid_list();
@@ -112,11 +108,15 @@ var WF = {
 
         });
 
+        $("body").on("click", ".element", function (event) {
+            WF.element_select(event.currentTarget);
+        });
+
 
         $("#wgs_add_btn")
             .button()
             .click(function () {
-                wid.wid_list.push({
+               wid.wid_list.push({
                     text: WF.elem_nr + " " + $("#wgs_add_select option:selected").text(),
                     value: WF.elem_nr
                 });
@@ -221,10 +221,7 @@ var WF = {
 
 
         function paint() {
-            $(".element_selected")
-                .removeClass("element_selected")
-
-            var es = wid.elements[_nr];
+           var es = wid.elements[_nr];
 
             var _defs = "";
             var _fill = "";
@@ -241,7 +238,7 @@ var WF = {
             }
 
 
-            $(container).append('<div class="element_selected" style="z-index:' + es.std.zindex() + '; position:absolute; top:' + es.std.top() + 'px; left:' + es.std.left() + 'px; border: 1px solid transparent;width:' + es.std.w() + 'px; height:' + es.std.h() + 'px" id="' + wid_id + '_' + es.std.nr() + '_knob">\
+            $(container).append('<div class="element" style="z-index:' + es.std.zindex() + '; position:absolute; top:' + es.std.top() + 'px; left:' + es.std.left() + 'px; border: 1px solid transparent;width:' + es.std.w() + 'px; height:' + es.std.h() + 'px" id="' + wid_id + '_' + es.std.nr() + '">\
             <svg \
                 viewBox="0 0 1000 1000"\
                 width="100%" \
@@ -249,7 +246,7 @@ var WF = {
             >\
             <defs>\
             <circle id="svg_knob' + es.std.nr() + '" cx="500" cy="500" r="' + (500 - (es.str.width())) + '"  />\
-          ' + _defs + '\
+            ' + _defs + '\
             </defs>\
             <g id="blurred">\
                  ' + _g + '\
@@ -259,33 +256,7 @@ var WF = {
             </div>');
 
 
-            $('#' + wid_id + '_' + es.std.nr() + '_knob').click(function () {
-                $(".set").hide();
-                $("#set" + es.std.nr()).show();
-                $(".element_selected")
-                    .removeClass("element_selected")
-                    .draggable("destroy")
-                    .resizable("destroy");
-                $(this)
-                    .addClass("element_selected")
-                    .draggable({
-                        containment: container,
-                        stop: function (event, ui) {
-                            es.std.top(ui.position.top);
-                            es.std.left(ui.position.left);
-
-
-                        }
-                    })
-                    .resizable({
-                        aspectRatio: true,
-                        handles: "se",
-                        stop: function (event, ui) {
-                            es.std.w(ui.size.width);
-                            es.std.h(ui.size.height);
-                        }
-                    });
-            });
+            WF.element_select($("#" + wid_id + '_' + es.std.nr()));
         }
 
 
@@ -293,12 +264,11 @@ var WF = {
 
         ko.applyBindings(wid, document.getElementById("set" + _nr));
         ko.watch(wid.elements[_nr], {wrap: true, depth: -1}, function () {
-            $('#' + wid_id + '_' + _nr + '_knob').remove();
+            $('#' + wid_id + '_' + _nr).remove();
             paint(_nr)
         });
         paint(_nr);
     },
-
     add_knob_bar: function (container, _nr) {
 
         wid.elements[_nr] = {
@@ -354,8 +324,6 @@ var WF = {
 
         function paint(_nr) {
 
-            $(".element_selected")
-                .removeClass("element_selected");
 
             var es = wid.elements[_nr];
 
@@ -396,7 +364,7 @@ var WF = {
                 _fill = '#' + es.str.color();
             }
 
-            $(container).append('<div class="element_selected" style=" left:' + es.std.left() + 'px;top:' + es.std.top() + 'px;z-index:' + es.std.zindex() + ';  position:absolute; border: 1px solid transparent;width:' + es.std.w() + 'px; height:' + es.std.h() + 'px" id="' + wid_id + '_' + es.std.nr() + '_knob_bar">\
+            $(container).append('<div class="element" style=" left:' + es.std.left() + 'px;top:' + es.std.top() + 'px;z-index:' + es.std.zindex() + ';  position:absolute; border: 1px solid transparent;width:' + es.std.w() + 'px; height:' + es.std.h() + 'px" id="' + wid_id + '_' + es.std.nr() + '">\
             <svg \
                 viewBox="0 0 1000 1000"\
                 width="100%" \
@@ -412,38 +380,7 @@ var WF = {
             </g>\
             </svg>\
             </div>');
-//            ko.applyBindings(wid, document.getElementById(wid_id + '_' + es.std.nr() + '_knob_bar'));
-
-
-            $('#' + wid_id + '_' + es.std.nr() + '_knob_bar').click(function () {
-                $(".set").hide();
-                $("#set" + es.std.nr()).show();
-                if (!$(this).hasClass("element_selected")) {
-                    $(".element_selected")
-                        .removeClass("element_selected")
-                        .draggable("destroy")
-                        .resizable("destroy");
-                    WF.make_drag_resize($(this))
-                }
-
-                $(this)
-                    .addClass("element_selected")
-                    .draggable({
-                        containment: container,
-                        stop: function (event, ui) {
-                            wid.elements[_nr].std.left(ui.position.left);
-                            wid.elements[_nr].std.top(ui.position.top);
-                        }
-                    })
-                    .resizable({
-                        aspectRatio: true,
-                        handles: "se",
-                        stop: function (event, ui) {
-                            wid.elements[_nr].std.w(ui.size.width);
-                            wid.elements[_nr].std.h(ui.size.height);
-                        }
-                    });
-            });
+//            ko.applyBindings(wid, document.getElementById(wid_id + '_' + es.std.nr()'));
 
             if (winkel < 180) {
 
@@ -452,17 +389,17 @@ var WF = {
                 $('[id="svg_knob_bar' + es.std.nr() + '"]').attr("d", "M" + x1 + "," + y1 + " A" + r + "," + r + " 0 1,1 " + x2 + "," + y2 + "  ");
             }
 
+            WF.element_select($("#" + wid_id + '_' + es.std.nr()));
         }
 
         new jscolor.init();
         ko.applyBindings(wid, document.getElementById("set" + _nr));
         ko.watch(wid.elements[_nr], {wrap: true, depth: -1}, function () {
-            $('#' + wid_id + '_' + _nr + '_knob_bar').remove();
+            $('#' + wid_id + '_' + _nr).remove();
             paint(_nr)
         });
         paint(_nr);
     },
-
     add_new_widget: function () {
 
         $("#prg_panel").append('<div id="new_widget_body" style="position:relative; border: 1px solid yellow"><div id="new_widget" style="width:500px; height:500px;   border: 1px dashed red"> </div></div>');
@@ -537,11 +474,11 @@ var WF = {
 
         wid.elements[nr].max.subscribe(function (newval) {
             wid.elements[nr].val(newval)
-            $("#" + nr + "_spec-sliderval").slider("option", {"max": parseInt(newval), value: wid.elements[nr].val(), });
+            $("#" + nr + "_spec-sliderval").slider("option", {"max": parseInt(newval), value: wid.elements[nr].val()});
 
         });
         wid.elements[nr].min.subscribe(function (newval) {
-            $("#" + nr + "_spec-sliderval").slider("option", {"min": parseInt(newval), value: wid.elements[nr].val(), });
+            $("#" + nr + "_spec-sliderval").slider("option", {"min": parseInt(newval), value: wid.elements[nr].val() });
 
         });
 
@@ -620,6 +557,7 @@ var WF = {
             '</table>' +
             '<hr>' +
             '</div>';
+
 
         $("#set" + nr).append(data);
 
@@ -830,8 +768,38 @@ var WF = {
 
     },
 
-    make_drag_resize: function ($this) {
+    element_select: function ($this) {
+        var _nr = $($this).attr("id").split(wid_id + "_")[1];
 
+        var container = $("#" + wid.elements[_nr].std.parrent());
+        if (!$($this).hasClass("element_selected")) {
+            $(".element_selected")
+                .draggable("destroy")
+                .resizable("destroy")
+                .removeClass("element_selected");
+            $(".set").hide();
+        }
+        $($this)
+            .addClass("element_selected")
+            .draggable({
+                containment: container,
+                stop: function (event, ui) {
+                    wid.elements[_nr].std.left(ui.position.left);
+                    wid.elements[_nr].std.top(ui.position.top);
+                }
+            })
+            .resizable({
+                aspectRatio: true,
+                handles: "se",
+                stop: function (event, ui) {
+                    wid.elements[_nr].std.w(ui.size.width);
+                    wid.elements[_nr].std.h(ui.size.height);
+
+                }
+            });
+
+        $("#set"+_nr).show();
+        $("#wg_select").data("selectBox-selectBoxIt").selectOption(_nr)
     }
 
 
