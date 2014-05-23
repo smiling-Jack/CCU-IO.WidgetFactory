@@ -1,0 +1,175 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+    <link href="img/icon/favicon.png" rel="shortcut icon" type="image/x-icon"/>
+    <title>WidgetFactory</title>
+
+    <!--<link id="theme_css" rel="stylesheet" href="css/dark-hive/jquery-ui-1.10.3.custom.min.css"/>-->
+
+    <link rel="stylesheet" href="css/Main.css"/>
+    <link rel="stylesheet" href="css/ui-menu-horizontal.css"/>
+    <link rel="stylesheet" href="css/jquery.contextMenu.css"/>
+    <link rel="stylesheet" href="css/ui.jqgrid.css"/>
+    <link rel="stylesheet" href="css/perfect-scrollbar.css"/>
+    <link rel="stylesheet" href="css/jquery.selectBoxIt.css"/>
+
+
+    <script type="text/javascript" src="js/lib/jquery-1.11.0.js"></script>
+    <script type="text/javascript" src="js/lib/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="js/lib/jquery.contextMenu.js"></script>
+
+    <!--<script src="../auth/auth.js" type="text/javascript"></script>-->
+    <!--<script src="../socket.io/socket.io.js"></script>-->
+
+    <script type="text/javascript" src="js/lib/alsoDrag.js"></script>
+    <script type="text/javascript" src="js/lib/jquery.ba-resize.min.js"></script>
+    <script type="text/javascript" src="js/lib/jquery.mousewheel.js"></script>
+    <script type="text/javascript" src="js/lib/loStorage.js"></script>
+    <script type="text/javascript" src="js/lib/perfect-scrollbar.js"></script>
+    <script type="text/javascript" src="js/lib/jquery.selectBoxIt.min.js"></script>
+    <script type="text/javascript" src="js/lib/jscolor.js"></script>
+    <script type="text/javascript" src="js/lib/knockout-3.1.0.js"></script>
+    <script type="text/javascript" src="js/lib/knockout.mapping-latest.js"></script>
+    <script type="text/javascript" src="js/lib/knockout.reactor.js"></script>
+
+    <!--<script type="text/javascript" src="js/lib/jquery.inputmask.bundle.min.js"></script>-->
+    <!--<script type="text/javascript" src="js/lib/can.jquery.min.js"></script>-->
+    <script type="text/javascript" src="js/lib/jquery.jqGrid.min.js"></script>
+    <!--<script type="text/javascript" src="js/lib/jquery.numberMask.js"></script>-->
+    <!--<script type="text/javascript" src="js/lib/jquery.autosize.min.js"></script>-->
+
+    <script type="text/javascript" src="js/WidgetFactory.js"></script>
+
+    <script type="text/javascript" src="js/Menu.js"></script>
+    <script type="text/javascript" src="js/Translate.js"></script>
+    <script type="text/javascript" src="js/xs_combo.js"></script>
+
+
+</head>
+
+<body id="body" class="">
+
+<div id="menu_body" class="menu_body ui-state-default">
+    <ul id="menu" class=" menu ">
+        <li class="menu-item"><a class="menu_font ">Datei</a>
+            <ul>
+                <li><a id="m_neu" class="item_font">Neu</a></li>
+                <li><a id="m_open" class="item_font">Öffnen</a></li>
+                <li><a id="m_example" class="item_font">Vorlagen</a></li>
+                <li><a id="m_save" class="item_font">Speichern</a></li>
+                <li><a id="m_save_as" class="item_font">Speichern als</a></li>
+                <li><a class="item_font">Export</a></li>
+            </ul>
+        </li>
+        <li class="menu-item"><a class="menu_font">Einstellungen</a>
+            <ul>
+                <li><a class="item_font">Theme ></a>
+                    <ul id="ul_theme">
+                        <li><a class="item_font" data-info="dark-hive">Dark-Hive</a></li>
+                        <li><a class="item_font" data-info="start">Start</a></li>
+                        <li><a class="item_font" data-info="humanity">humanity</a></li>
+                        <li><a class="item_font" data-info="blitzer">blitzer</a></li>
+                        <li><a class="item_font" data-info="swanky-purse">Swanky Purse</a></li>
+                    </ul>
+                </li>
+                <!--<li><a id="m_setup" class="item_font">Setup</a></li>-->
+            </ul>
+        </li>
+        <li class="menu-item"><a class="menu_font ">Widget Builder</a>
+            <ul>
+                <li></li>
+                <li></li>
+                <li></li>
+            </ul>
+        </li>
+        <li class="menu-item"><a class="menu_font">Help</a>
+            <ul>
+                <li></li>
+                <li></li>
+                <li></li>
+            </ul>
+        </li>
+    </ul>
+
+    <a id="m_file" class="item_font">Neu</a>
+    <a id="m_file_lb" class="item_font">Datei:</a>
+</div>
+
+<div id="icon_bar" class="icon_bar ui-state-default">
+
+    <img src="img/icon/move_to_folder.png" class="img_iconbar set_local" id="img_save_local" title="Speicher local"/>
+    <img src="img/icon/folder.png" class="img_iconbar set_local" id="img_open_local" title="Öffnen local"/>
+    <!--<button id="test">test</button>-->
+    <select id="wg_select"> </select>
+    <input id="backcolor_var" style="margin-right:20px;float: right; font-size: 0" class="color img_iconbar" value="808080">
+    <div id="backcolor_white" style="margin-right:10px;float: right;background-color: white" class="img_iconbar"></div>
+    <div id="backcolor_black" style="margin-right:10px;float: right;background-color: #000000"class="img_iconbar"></div>
+
+
+
+</div>
+<div id="main" class="main">
+
+<div id="wgs_body" class="toolbox_body ui-widget-content ">
+    <div id="wgs_content">
+       <br>
+        <div id="wgs_add">
+            <button id="wgs_add_head" class="setting_btn">Hinzufügen:</button>
+            <div id="wgs_add_content">
+                <br>
+                <table>
+                    <tr>
+                        <td>Was:</td>
+                        <td>
+                            <select id="wgs_add_select">
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>WO:</td>
+                        <td>
+                            <select id="wgs_add_select_container">
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+                <br>
+                <button id="wgs_add_btn" class="setting_btn">Einfügen</button>
+            </div>
+        </div>
+        <br>
+        <div id="wgs_general">
+            <button id="wgs_general_head" class="setting_btn">Widget Einstellungen:</button>
+            <div id="wgs_general_content">
+                <table>
+                    <tr>
+                        <td width="100px">Name:</td>
+                        <td><input id="wgs_name" type="text" data-bind="value: name" > </td>
+                    </tr>
+                    <tr>
+                        <td>Breite:</td>
+                        <td><input id="wgs_width" type="text" data-bind="value: width"> </td>
+                    </tr>
+                    <tr>
+                        <td>Höhe:</td>
+                        <td><input id="wgs_height" type="text" data-bind="value: height"> </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="prg_body" class="prg_body scroll-pane ">
+    <div id="prg_panel" class="prg_panel scroll-content">
+    </div>
+</div>
+</div>
+
+
+
+
+</body>
+</html>
